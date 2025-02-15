@@ -52,22 +52,22 @@ const WhyUs = () => {
           <Image
             src="/Assets/bus-image-big.png"
             alt="Big Image"
-            layout="fill"
+            fill
             objectFit="cover"
             className="rounded-3xl"
           />
           {/* Small Image */}
-          <div className="absolute bg-blue-400 -right-1/3 inset-y-10 rounded-xl h-3/4 w-2/3 border-white border-4">
+          <div className="absolute -right-1/3 inset-y-10 rounded-3xl h-3/4 w-2/3 border-white border-l-8 border-y-8">
             <Image
               src="/Assets/bus-image-small.png"
               alt="Small Image"
-              layout="fill"
+              fill
               objectFit="cover"
-              className="rounded-xl"
+              className="rounded-3xl"
             />
           </div>
           {/* Badge */}
-          <div className="absolute bottom-4 left-4 font-extrabold flex-col rounded-lg py-2 px-4 border-1 border-slate-400 bg-white align">
+          <div className="absolute bottom-4 left-4 font-extrabold flex-col rounded-2xl py-2 px-4 border-1 border-slate-400 bg-white align">
             <p className="text-center">25+ Years</p>
             <p>⭐⭐⭐⭐⭐</p>
           </div>

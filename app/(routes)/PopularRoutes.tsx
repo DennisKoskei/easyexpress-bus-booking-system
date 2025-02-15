@@ -24,7 +24,7 @@ const PopularRoutes = () => {
               <Image
                 src={route.image}
                 alt={route.name}
-                layout="fill"
+                fill
                 objectFit="cover"
                 className="rounded-t-xl"
               />

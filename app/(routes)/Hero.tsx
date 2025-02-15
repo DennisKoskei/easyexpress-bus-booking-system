@@ -10,13 +10,13 @@ const Hero = () => {
         <Image
           src="/Assets/bus-wallpaper-bg.jpg"
           alt="Bus Travel"
-          layout="fill"
+          fill
           objectFit="cover"
           priority
           className="z-0 backdrop-blur-[1px]"
         />
         {/* Optional: Overlay for better contrast */}
-        {/*<div className="absolute inset-0 bg-black/50"></div> */}
+        <div className="absolute inset-0 bg-blue-700/10"></div>
       </div>
 
       {/* Search Section */}

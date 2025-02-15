@@ -1,28 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+// Define Bus type
+interface Bus {
+  id: number;
+  departure: string;
+  destination: string;
+  date: string;
+}
+
 // Mock database
-const mockBuses = [
+const mockBuses: Bus[] = [
   { id: 1, departure: "Nairobi", destination: "Mombasa", date: "2025-02-15" },
   { id: 2, departure: "Kisumu", destination: "Nairobi", date: "2025-02-16" },
   { id: 3, departure: "Eldoret", destination: "Kampala", date: "2025-02-17" },
 ];
 
-const SearchBox = () => {
+// Define form data type
+interface SearchData {
+  departure: string;
+  destination: string;
+  date: string;
+}
+
+const SearchBox: React.FC = () => {
   const router = useRouter();
-  const [searchData, setSearchData] = useState({
+  const [searchData, setSearchData] = useState<SearchData>({
     departure: "",
     destination: "",
     date: "",
   });
 
-  const handleChange = (e) => {
+  // Handle input change
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchData({ ...searchData, [e.target.name]: e.target.value });
   };
 
-  const handleSearch = (e) => {
+  // Handle form submission
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const foundBuses = mockBuses.filter(
