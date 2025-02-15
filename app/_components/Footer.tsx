@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -7,23 +8,33 @@ const Footer = () => {
   return (
     <footer className="bg-slate-900 text-white py-10 px-8 md:px-20">
       {/* Top Section */}
-      <div className="flex flex-col md:flex-row justify-between pb-20 border-b border-gray-700">
+      <div className="flex flex-col md:flex-row justify-between pb-28 pt-10 border-b border-gray-700">
         {/* Company Info */}
-        <div className="md:w-1/3 space-y-3">
-          <h3 className="text-2xl font-bold text-blue-400">EasyExpress</h3>
-          <p className="text-gray-300 text-sm leading-relaxed">
-            EasyExpress is the world&apos;s largest online bus ticket booking
-            service trusted by over 5 million happy customers countrywide.
-            EasyExpress offers bus ticket booking through its website, iOS and
-            Android mobile apps for all major routes.
-          </p>
+        <div className="md:w-1/2 space-x-5 flex flex-row">
+          <div className="md:w-1/3">
+            <Image
+              src="/Assets/easyexpress-bus-logo.png"
+              alt="EasyExpress Logo"
+              width={300}
+              height={100}
+            />
+          </div>
+          <div className="md:w-3/4 space-y-3">
+            <h3 className="text-2xl font-bold text-blue-400">EasyExpress</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              EasyExpress is the world&apos;s largest online bus ticket booking
+              service trusted by over 5 million happy customers countrywide.
+              EasyExpress offers bus ticket booking through its website, iOS and
+              Android mobile apps for all major routes.
+            </p>
+          </div>
         </div>
 
         {/* Quick Links */}
-        <div className="flex flex-wrap md:flex-nowrap gap-x-14 mt-6 md:mt-0">
+        <div className="flex flex-wrap md:flex-nowrap gap-x-14 mt-6 md:mt-0 text-sm">
           <div>
             <h2 className="text-lg font-semibold pb-2">Info</h2>
-            <ul className="text-gray-400 space-y-1">
+            <ul className="text-gray-400 space-y-1 ">
               <li className="hover:text-blue-400 cursor-pointer">T&C</li>
               <li className="hover:text-blue-400 cursor-pointer">
                 Privacy Policy
