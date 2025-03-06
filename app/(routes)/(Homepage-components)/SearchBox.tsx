@@ -3,21 +3,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-// Define Bus type
-interface Bus {
-  id: number;
-  departure: string;
-  destination: string;
-  date: string;
-}
-
-// Mock database
-const mockBuses: Bus[] = [
-  { id: 1, departure: "Nairobi", destination: "Mombasa", date: "2025-02-15" },
-  { id: 2, departure: "Kisumu", destination: "Nairobi", date: "2025-02-16" },
-  { id: 3, departure: "Eldoret", destination: "Kampala", date: "2025-02-17" },
-];
-
 // Define form data type
 interface SearchData {
   departure: string;
@@ -39,23 +24,33 @@ const SearchBox: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+  const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Sending request with:", searchData); // Log sent data
 
-    const foundBuses = mockBuses.filter(
-      (bus) =>
-        bus.departure.toLowerCase() === searchData.departure.toLowerCase() &&
-        bus.destination.toLowerCase() ===
-        searchData.destination.toLowerCase() &&
-        bus.date === searchData.date,
-    );
+    try {
+      const response = await fetch("/api/search-buses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(searchData),
+      });
 
-    if (foundBuses.length > 0) {
-      router.push(
-        `/search-results?departure=${searchData.departure}&destination=${searchData.destination}&date=${searchData.date}`,
-      );
-    } else {
-      alert("No buses available for the specified date.");
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Received response:", result);
+
+      if (result.foundBuses.length > 0) {
+        router.push(
+          `/search-results?departure=${searchData.departure}&destination=${searchData.destination}&date=${searchData.date}`
+        );
+      } else {
+        alert("No buses available for the specified date.");
+      }
+    } catch (error) {
+      console.error("Error fetching buses:", error);
     }
   };
 

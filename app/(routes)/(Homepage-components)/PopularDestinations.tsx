@@ -1,5 +1,5 @@
 import React from "react";
-import { destinations } from "../constants/constants";
+import { destinations } from "@/app/constants/constants";
 
 const PopularDestinations = () => {
   return (

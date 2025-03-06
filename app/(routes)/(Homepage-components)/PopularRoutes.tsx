@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import { routes } from "../constants/constants";
+import { routes } from "@/app/constants/constants";
 
 const PopularRoutes = () => {
   return (
