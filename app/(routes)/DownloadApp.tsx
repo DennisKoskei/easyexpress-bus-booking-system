@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const DownloadApp = () => {
   return (
-    <div className="Download_App flex flex-row items-center justify-between px-20 py-20 bg-gray-100">
+    <div className="Download_App flex flex-row items-center justify-between px-20 py-20 bg-blue-100">
       {/* Left: Phone Image */}
       <div className="w-1/2 flex justify-center">
         <Image

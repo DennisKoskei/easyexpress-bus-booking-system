@@ -11,7 +11,7 @@ const Hero = () => {
           src="/Assets/bus-wallpaper-bg.jpg"
           alt="Bus Travel"
           fill
-          objectFit="cover"
+          style={{ objectFit: "cover" }}
           priority
           className="z-0 backdrop-blur-[1px]"
         />

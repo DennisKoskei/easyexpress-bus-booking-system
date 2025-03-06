@@ -2,9 +2,9 @@ import React from "react";
 
 const Testimonials = () => {
   return (
-    <div className="Client_Testimonials px-20 pt-10">
+    <div className="Client_Testimonials relative px-20 pt-10 pb-20 bg-gray-100">
       {/* Title Section */}
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col relative justify-center items-center">
         <h1 className="p-4 font-semibold text-3xl text-blue-600">
           What Our Clients Say...
         </h1>
@@ -15,7 +15,7 @@ const Testimonials = () => {
       </div>
 
       {/* Testimonial Cards */}
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row relative z-20 gap-5">
         {[
           {
             text: "EasyExpress made my travel so much easier! The booking process was seamless, and the bus was extremely comfortable.",
@@ -36,7 +36,7 @@ const Testimonials = () => {
         ].map((testimonial, index) => (
           <div
             key={index}
-            className="cards border-2 rounded-xl py-4 px-4 w-1/4 bg-white shadow-md"
+            className="cards border-2 rounded-xl py-4 px-5 w-1/4 bg-white shadow-md"
           >
             <p className="pr-2 text-gray-700">{testimonial.text}</p>
             <div className="flex flex-row gap-2 text-sm font-medium items-center mt-2">
@@ -50,7 +50,7 @@ const Testimonials = () => {
       </div>
 
       {/* Logo Section (Full Width) */}
-      <div className="bg-black h-28 -mt-6 w-full flex gap-12 items-center justify-around text-white font-bold text-lg pt-4">
+      <div className="bg-black absolute -inset-x-0 h-28 -mt-6 w-full mx-auto flex gap-12 items-center justify-around text-white font-bold text-lg pt-4">
         <p className="text-gray-300">LOGO</p>
         <p className="text-gray-300">LOGO</p>
         <p className="text-gray-300">LOGO</p>

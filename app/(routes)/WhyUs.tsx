@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const WhyUs = () => {
   return (
-    <div className="Why_Us bg-gray-100 flex flex-col md:flex-row px-10 md:px-20 py-16 items-center gap-12">
+    <div className="Why_Us bg-blue-100 flex flex-col md:flex-row px-10 md:px-20 py-16 items-center gap-12">
       {/* Left Section (Text) */}
       <div className="w-full md:w-1/2">
         <h1 className="text-blue-600 font-bold text-lg uppercase tracking-widest">
@@ -53,21 +53,21 @@ const WhyUs = () => {
             src="/Assets/bus-image-big.png"
             alt="Big Image"
             fill
-            objectFit="cover"
+            style={{ objectFit: "cover" }}
             className="rounded-3xl"
           />
           {/* Small Image */}
-          <div className="absolute -right-1/3 inset-y-10 rounded-3xl h-3/4 w-2/3 border-white border-l-8 border-y-8">
+          <div className="absolute -right-1/3 inset-y-10 rounded-[15%] h-3/4 w-2/3 border-blue-100 border-l-8 border-y-8">
             <Image
               src="/Assets/bus-image-small.png"
               alt="Small Image"
               fill
-              objectFit="cover"
-              className="rounded-3xl"
+              style={{ objectFit: "cover" }}
+              className="rounded-[15%]"
             />
           </div>
           {/* Badge */}
-          <div className="absolute bottom-4 left-4 font-extrabold flex-col rounded-2xl py-2 px-4 border-1 border-slate-400 bg-white align">
+          <div className="absolute bottom-2 left-2 font-extrabold flex-col rounded-2xl py-2 px-4 border-1 border-slate-400 bg-white align">
             <p className="text-center">25+ Years</p>
             <p>⭐⭐⭐⭐⭐</p>
           </div>
