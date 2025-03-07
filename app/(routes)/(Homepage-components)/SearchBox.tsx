@@ -44,7 +44,7 @@ const SearchBox: React.FC = () => {
 
       if (result.foundBuses.length > 0) {
         router.push(
-          `/search-results?departure=${searchData.departure}&destination=${searchData.destination}&date=${searchData.date}`
+          `/search-results?departure=${searchData.departure}&destination=${searchData.destination}&date=${searchData.date}`,
         );
       } else {
         alert("No buses available for the specified date.");

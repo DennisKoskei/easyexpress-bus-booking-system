@@ -1,10 +1,10 @@
 import React from "react";
-import Hero from "./(Homepage-components)/Hero";
-import PopularRoutes from "./(Homepage-components)/PopularRoutes";
-import WhyUs from "./(Homepage-components)/WhyUs";
-import Testimonials from "./(Homepage-components)/Testimonials";
-import PopularDestinations from "./(Homepage-components)/PopularDestinations";
-import DownloadApp from "./(Homepage-components)/DownloadApp";
+import Hero from "@app/(Homepage-components)/Hero";
+import PopularRoutes from "@app/(Homepage-components)/PopularRoutes";
+import WhyUs from "@app/(Homepage-components)/WhyUs";
+import Testimonials from "@app/(Homepage-components)/Testimonials";
+import PopularDestinations from "@app/(Homepage-components)/PopularDestinations";
+import DownloadApp from "@app/(Homepage-components)/DownloadApp";
 
 const Homepage = () => {
   return (
