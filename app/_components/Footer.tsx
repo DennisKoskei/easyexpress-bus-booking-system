@@ -1,4 +1,3 @@
-import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
@@ -86,13 +85,13 @@ const Footer = () => {
             © 2025 EasyExpress-Coaches - All Rights Reserved.
           </p>
           <p className="text-gray-400 text-sm underline">
-            <Link
-              href={
-                "https:www.github.com/DennisKoskei/easyexpress-bus-booking.git"
-              }
+            <a
+              href="https://github.com/DennisKoskei/easyexpress-bus-booking-system.git"
+              target="_blank"
+              rel="noopener noreferrer" // Important for security
             >
               View this Project on Github
-            </Link>
+            </a>
           </p>
         </div>
 
