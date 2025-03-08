@@ -48,6 +48,7 @@ const SearchBox: React.FC = () => {
         );
       } else {
         alert("No buses available for the specified date.");
+        setSearchData({ departure: "", destination: "", date: "" });
       }
     } catch (error) {
       console.error("Error fetching buses:", error);
