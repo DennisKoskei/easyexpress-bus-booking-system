@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String    @unique
+  phone        String    @unique
+  passwordHash String
+  gender       Gender
+  age          Int
+  role         Role      @default(PASSENGER)
+  bookings     Booking[]
+  tickets      Ticket[]
+  createdAt    DateTime  @default(now())
+}
+
+enum Role {
+  PASSENGER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Bus {
+  id          Int     @id @default(autoincrement())
+  plateNumber String  @unique
+  totalSeats  Int
+  busAvatar   String?
+  driverId    Int     @unique
+  driver      Driver  @relation(fields: [driverId], references: [id])
+  routes      Route[]
+  seats       Seat[]
+}
+
+model Driver {
+  id         Int    @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  phone      String @unique
+  licenseNo  String @unique
+  experience Int
+  bus        Bus?
+}
+
+model Route {
+  id          Int       @id @default(autoincrement())
+  departure   String
+  destination String
+  date        DateTime
+  time        String
+  amount      Float
+  busId       Int
+  bus         Bus       @relation(fields: [busId], references: [id])
+  bookings    Booking[]
+  tickets     Ticket[]
+}
+
+model Seat {
+  id         Int        @id @default(autoincrement())
+  busId      Int
+  seatNumber Int
+  status     SeatStatus @default(AVAILABLE)
+  bus        Bus        @relation(fields: [busId], references: [id])
+  bookings   Booking[]
+  tickets    Ticket[]
+}
+
+enum SeatStatus {
+  AVAILABLE
+  BOOKED
+}
+
+model Booking {
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  routeId         Int
+  seatId          Int
+  passengerName   String
+  passengerPhone  String
+  passengerGender Gender
+  status          BookingStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  user            User          @relation(fields: [userId], references: [id])
+  route           Route         @relation(fields: [routeId], references: [id])
+  seat            Seat          @relation(fields: [seatId], references: [id])
+  payment         Payment?
+  ticket          Ticket?
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+model Payment {
+  id            Int           @id @default(autoincrement())
+  bookingId     Int           @unique
+  amountPaid    Float
+  paymentMethod PaymentMethod
+  transactionId String        @unique
+  status        PaymentStatus @default(SUCCESSFUL)
+  paymentDate   DateTime      @default(now())
+  booking       Booking       @relation(fields: [bookingId], references: [id])
+}
+
+enum PaymentMethod {
+  MPESA
+  PAYPAL
+}
+
+enum PaymentStatus {
+  SUCCESSFUL
+  FAILED
+}
+
+model Ticket {
+  id          Int     @id @default(autoincrement())
+  passengerId Int
+  bookingId   Int     @unique
+  routeId     Int
+  seatId      Int
+  busPlate    String
+  price       Float
+  qrCode      String  @unique
+  passenger   User    @relation(fields: [passengerId], references: [id])
+  booking     Booking @relation(fields: [bookingId], references: [id])
+  route       Route   @relation(fields: [routeId], references: [id])
+  seat        Seat    @relation(fields: [seatId], references: [id])
+}
