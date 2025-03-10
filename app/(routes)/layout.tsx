@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import React from "react";
-import "@/app/_styles/globals.css";
+import "@styles/globals.css";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
+import SessionProvider from "@components/SessionProvider"; // Import the new provider
 
 export const metadata: Metadata = {
   title: "EasyExpress Bus Booking System",
@@ -16,10 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="">
-        <Header />
-        <div className="relative overflow-hidden">{children}</div>
-        <Footer />
+      <body>
+        <SessionProvider>
+          <Header />
+          <div className="relative overflow-hidden">{children}</div>
+          <Footer />
+        </SessionProvider>
       </body>
     </html>
   );

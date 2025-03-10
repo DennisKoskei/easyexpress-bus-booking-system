@@ -1,7 +1,22 @@
+//@type {import('next').NextConfig}
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https", // Or 'http' if needed
+        hostname: "avatars.githubusercontent.com",
+        port: "", // Leave empty if default port
+        pathname: "/**", // Allow all paths under this hostname
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com", // Google profile images
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
-export default nextConfig;
+module.exports = NextConfig;

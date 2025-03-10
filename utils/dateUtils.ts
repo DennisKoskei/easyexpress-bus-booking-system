@@ -1,6 +1,6 @@
 // Format Date and Time
 
-// Format Date
+//** FORMAT DATE **//
 export const formatDate = (dateString: string | Date | null): string => {
   if (!dateString) {
     return "";
@@ -16,7 +16,7 @@ export const formatDate = (dateString: string | Date | null): string => {
   return `${weekday} ${month}-${year}`;
 };
 
-// Format Time
+//** FORMAT TIME **//
 export const formatTime = (timeString: string | null | undefined): string => {
   if (!timeString) {
     return "";
