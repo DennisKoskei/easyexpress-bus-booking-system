@@ -9,14 +9,11 @@ import { prisma } from "@utils/prisma";
 
 // Define a type for Prisma user (excluding sensitive fields)
 type User = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
-  gender: string;
-  age: number;
-  role: string;
+  //-NOTE: Add avatar field
 };
 
 export const authConfig: NextAuthOptions = {
@@ -42,16 +39,24 @@ export const authConfig: NextAuthOptions = {
       },
 
       async authorize(
-        credentials: Record<"email" | "password", string | undefined>,
+        credentials: Record<"email" | "password", string> | undefined,
+        req: { headers: Headers },
       ): Promise<User | null> {
-        if (!credentials || !credentials.email || !credentials.password) {
+        if (!credentials) {
+          console.log("❌ No credentials provided.");
+          return null;
+        }
+
+        const { email, password } = credentials;
+
+        if (!email || !password) {
           console.log("❌ Missing email or password.");
           return null;
         }
 
         // Fetch user from DB
         const dbUser = await prisma.user.findFirst({
-          where: { email: credentials.email },
+          where: { email },
         });
 
         if (!dbUser) {
@@ -61,24 +66,25 @@ export const authConfig: NextAuthOptions = {
 
         console.log("✅ User found in DB:", dbUser);
 
-        // Verify password using simple `===`
-        if (dbUser.passwordHash !== credentials.password) {
+        // Verify password
+        if (dbUser.passwordHash !== password) {
           console.log("❌ Incorrect password.");
           return null;
         }
 
-        // Log all user details
-        console.log("🔹 User Details:");
-        //console.log(`ID: ${dbUser.id}`);
-        //console.log(`Name: ${dbUser.firstName} ${dbUser.lastName}`);
-        //console.log(`Email: ${dbUser.email}`);
-        //console.log(`Phone: ${dbUser.phone}`);
-        console.log("All user details:", dbUser);
-
         // Remove sensitive info before returning
-        const { passwordHash, ...safeUser } = dbUser;
+        const {
+          age,
+          phone,
+          gender,
+          role,
+          createdAt,
+          passwordHash,
+          ...safeUser
+        } = dbUser;
 
-        return safeUser as User;
+        console.log("🔹 Safe User Details:", safeUser);
+        return { ...safeUser, id: String(dbUser.id) } as User;
       },
     }),
   ],
@@ -87,5 +93,7 @@ export const authConfig: NextAuthOptions = {
 // ✅ SERVER-SIDE AUTH CHECK
 export async function loginIsRequiredServer() {
   const session = await getServerSession(authConfig);
-  if (!session) return redirect("/");
+  console.log("Session Data:", session);
+  if (!session) return redirect("/login");
+  return session;
 }

@@ -1,11 +1,15 @@
 import React from "react";
+import Profile from "@app/profile/(components)/Profile";
+import { loginIsRequiredServer } from "@utils/auth"; // Import the auth check function
 
-const Profile = () => {
+const ProfilePage = async () => {
+  await loginIsRequiredServer(); // Ensures user is authenticated before rendering
+
   return (
     <div>
-      <p>Profile</p>
+      <Profile />
     </div>
   );
 };
 
-export default Profile;
+export default ProfilePage;

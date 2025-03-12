@@ -3,7 +3,7 @@ import React from "react";
 import "@styles/globals.css";
 import Header from "@components/Header";
 import Footer from "@components/Footer";
-import SessionProvider from "@components/SessionProvider"; // Import the new provider
+import SessionProvider from "@components/SessionProvider"; // Import provider
 
 export const metadata: Metadata = {
   title: "EasyExpress Bus Booking System",
@@ -19,9 +19,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <SessionProvider>
-          <Header />
-          <div className="relative overflow-hidden">{children}</div>
-          <Footer />
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <div className="relative flex-1 overflow-hidden">{children}</div>
+            <Footer />
+          </div>
         </SessionProvider>
       </body>
     </html>
