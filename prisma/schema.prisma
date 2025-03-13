@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
+  id           String    @id @default(cuid())
   firstName    String
   lastName     String
   email        String    @unique
@@ -40,42 +40,42 @@ enum Gender {
 }
 
 model Bus {
-  id          Int     @id @default(autoincrement())
+  id          String  @id @default(cuid())
   plateNumber String  @unique
   totalSeats  Int
   busAvatar   String?
-  driverId    Int     @unique
+  driverId    String  @unique
   driver      Driver  @relation(fields: [driverId], references: [id])
   routes      Route[]
   seats       Seat[]
 }
 
 model Driver {
-  id         Int    @id @default(autoincrement())
+  id         String  @id @default(cuid())
   firstName  String
   lastName   String
-  phone      String @unique
-  licenseNo  String @unique
+  phone      String  @unique
+  licenseNo  String  @unique
   experience Int
   bus        Bus?
 }
 
 model Route {
-  id          Int       @id @default(autoincrement())
+  id          String   @id @default(cuid())
   departure   String
   destination String
   date        DateTime
   time        String
   amount      Float
-  busId       Int
-  bus         Bus       @relation(fields: [busId], references: [id])
+  busId       String
+  bus         Bus      @relation(fields: [busId], references: [id])
   bookings    Booking[]
   tickets     Ticket[]
 }
 
 model Seat {
-  id         Int        @id @default(autoincrement())
-  busId      Int
+  id         String     @id @default(cuid())
+  busId      String
   seatNumber Int
   status     SeatStatus @default(AVAILABLE)
   bus        Bus        @relation(fields: [busId], references: [id])
@@ -89,10 +89,10 @@ enum SeatStatus {
 }
 
 model Booking {
-  id              Int           @id @default(autoincrement())
-  userId          Int
-  routeId         Int
-  seatId          Int
+  id              String        @id @default(cuid())
+  userId          String
+  routeId         String
+  seatId          String
   passengerName   String
   passengerPhone  String
   passengerGender Gender
@@ -112,8 +112,8 @@ enum BookingStatus {
 }
 
 model Payment {
-  id            Int           @id @default(autoincrement())
-  bookingId     Int           @unique
+  id            String        @id @default(cuid())
+  bookingId     String        @unique
   amountPaid    Float
   paymentMethod PaymentMethod
   transactionId String        @unique
@@ -133,11 +133,11 @@ enum PaymentStatus {
 }
 
 model Ticket {
-  id          Int     @id @default(autoincrement())
-  passengerId Int
-  bookingId   Int     @unique
-  routeId     Int
-  seatId      Int
+  id          String  @id @default(cuid())
+  passengerId String
+  bookingId   String  @unique
+  routeId     String
+  seatId      String
   busPlate    String
   price       Float
   qrCode      String  @unique
