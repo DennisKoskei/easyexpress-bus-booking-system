@@ -12,7 +12,7 @@ if (!secretKey) {
 
 const key = new TextEncoder().encode(secretKey);
 
-// Encrypts the session payload
+// ENCRYPTS THE SESSION PAYLOAD
 export async function encrypt(payload: SessionPayload) {
   console.log("🔒 Encrypting session payload:", payload);
   const token = await new SignJWT(payload)
@@ -24,7 +24,7 @@ export async function encrypt(payload: SessionPayload) {
   return token;
 }
 
-// Decrypts the session token
+// DECRYPTS THE SESSION TOKEN
 export async function decrypt(session: string | undefined = "") {
   try {
     console.log("🔓 Decrypting session:", session);
@@ -44,14 +44,15 @@ export async function decrypt(session: string | undefined = "") {
   }
 }
 
-// Creates a new session and sets the cookie
+// CREATES A NEW SESSION AND SETS THE COOKIE
 export async function createSession(userId: string) {
   console.log("🔹 Creating session for user:", userId);
 
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
   const session = await encrypt({ userId, expiresAt });
 
-  cookies().set("session", session, {
+  const cookieStore = await cookies();
+  cookieStore.set("session", session, {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
@@ -63,10 +64,12 @@ export async function createSession(userId: string) {
   redirect("/");
 }
 
-// Verifies the session and returns the userId
+// VERIFIES THE SESSION AND RETURNS THE USERID
 export async function verifySession() {
   console.log("🔍 Verifying session...");
-  const sessionCookie = cookies().get("session");
+
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("session");
 
   if (!sessionCookie) {
     console.warn("⚠️ No session cookie found. Redirecting to /login");
@@ -83,10 +86,11 @@ export async function verifySession() {
   return { isAuth: true, userId: Number(session.userId) };
 }
 
-// Updates the session cookie with a new expiry date
+// UPDATES THE SESSION COOKIE WITH A NEW EXPIRY DATE
 export async function updateSession() {
   console.log("🔄 Updating session...");
-  const sessionCookie = cookies().get("session");
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("session");
 
   if (!sessionCookie) {
     console.warn("⚠️ No session to update.");
@@ -101,11 +105,11 @@ export async function updateSession() {
 
   const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const newSession = await encrypt({
-    userId: payload.userId,
+    userId,
     expiresAt: newExpiresAt,
   });
 
-  cookies().set("session", newSession, {
+  cookieStore.set("session", newSession, {
     httpOnly: true,
     secure: true,
     expires: newExpiresAt,
@@ -116,10 +120,11 @@ export async function updateSession() {
   console.log("✅ Session updated with new expiry date:", newExpiresAt);
 }
 
-// Deletes the session cookie
+// DELETES THE SESSION COOKIE
 export async function deleteSession() {
   console.log("🗑️ Deleting session...");
-  cookies().delete("session");
+  const cookieStore = await cookies();
+  cookieStore.delete("session");
   console.log("✅ Session deleted. Redirecting to /login");
   redirect("/login");
 }
