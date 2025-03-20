@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
+import { capitalizeFirstLetter } from "@utils/formatText";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
     console.log("Received req.body:", body);
 
-    const { departure, destination, date } = body;
+    let { departure, destination } = body;
+    const { date } = body;
 
     if (!departure || !destination || !date) {
       console.error("Error: Missing required fields");
@@ -15,6 +17,10 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    // Format departure and destination
+    departure = capitalizeFirstLetter(departure);
+    destination = capitalizeFirstLetter(destination);
 
     const foundBuses = await prisma.route.findMany({
       where: {

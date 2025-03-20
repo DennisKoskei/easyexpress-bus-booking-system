@@ -26,7 +26,7 @@ const SearchResultsPage = () => {
   useEffect(() => {
     const fetchBuses = async () => {
       try {
-        const response = await fetch("/api/search-buses", {
+        const response = await fetch("/api/user/search-buses", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ departure, destination, date }),

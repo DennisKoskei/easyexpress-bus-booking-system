@@ -29,7 +29,7 @@ const SearchBox: React.FC = () => {
     console.log("Sending request with:", searchData); // Log sent data
 
     try {
-      const response = await fetch("/api/search-buses", {
+      const response = await fetch("/api/user/search-buses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(searchData),
