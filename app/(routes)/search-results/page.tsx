@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { formatDate, formatTime } from "@utils/dateUtils"; // Adjust path as needed
 
 interface Bus {
@@ -16,6 +16,7 @@ interface Bus {
 
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const departure = searchParams.get("departure") || "";
   const destination = searchParams.get("destination") || "";
   const date = searchParams.get("date") || "";
@@ -25,6 +26,10 @@ const SearchResultsPage = () => {
 
   useEffect(() => {
     const fetchBuses = async () => {
+      if (!departure || !destination || !date) {
+        return router.push("/"); // Redirect if search params are missing
+      }
+
       try {
         const response = await fetch("/api/user/search-buses", {
           method: "POST",
@@ -37,17 +42,23 @@ const SearchResultsPage = () => {
         }
 
         const data = await response.json();
+
+        if (!data.foundBuses?.length) {
+          return router.push("/"); // Redirect if no buses found
+        }
+
         setBuses(data.foundBuses);
         console.log("Found buses: ", data);
       } catch (error) {
         console.error("Error fetching buses:", error);
+        router.push("/"); // Redirect on error
       } finally {
         setLoading(false);
       }
     };
 
     fetchBuses();
-  }, [departure, destination, date]);
+  }, [departure, destination, date, router]);
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -84,7 +95,7 @@ const SearchResultsPage = () => {
         <div className="w-3/4">
           {loading ? (
             <div className="text-center text-gray-600">Loading buses...</div>
-          ) : buses.length > 0 ? (
+          ) : (
             buses.map((bus) => (
               <div
                 key={bus.id}
@@ -139,15 +150,6 @@ const SearchResultsPage = () => {
                 </div>
               </div>
             ))
-          ) : (
-            <div className="text-center bg-white p-6 rounded-lg shadow-lg">
-              <h2 className="text-2xl font-semibold text-red-600">
-                No buses available
-              </h2>
-              <p className="text-gray-600 mt-2">
-                Try searching for another date or route.
-              </p>
-            </div>
           )}
         </div>
       </div>
