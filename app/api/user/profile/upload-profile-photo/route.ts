@@ -1,3 +1,5 @@
+// DO NOT USE THIS FILE FOR ITS PURPOSE
+
 import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
 import { getServerSession } from "next-auth";
