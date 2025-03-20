@@ -2,6 +2,7 @@
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { capitalizeFirstLetter } from "@utils/formatText"; // Import the function
 
 // Define form data type
 interface SearchData {
@@ -28,11 +29,20 @@ const SearchBox: React.FC = () => {
     e.preventDefault();
     console.log("Sending request with:", searchData); // Log sent data
 
+    // Format departure and destination before sending the request
+    const formattedData = {
+      departure: capitalizeFirstLetter(searchData.departure),
+      destination: capitalizeFirstLetter(searchData.destination),
+      date: searchData.date,
+    };
+
+    console.log("Sending request with:", formattedData);
+
     try {
       const response = await fetch("/api/user/search-buses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(searchData),
+        body: JSON.stringify(formattedData),
       });
 
       if (!response.ok) {
@@ -44,7 +54,7 @@ const SearchBox: React.FC = () => {
 
       if (result.foundBuses.length > 0) {
         router.push(
-          `/search-results?departure=${searchData.departure}&destination=${searchData.destination}&date=${searchData.date}`,
+          `/search-results?departure=${formattedData.departure}&destination=${formattedData.destination}&date=${formattedData.date}`,
         );
       } else {
         alert("No buses available for the specified date.");
