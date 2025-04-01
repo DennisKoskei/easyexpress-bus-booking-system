@@ -22,9 +22,10 @@ export async function POST(req: Request) {
         destination,
         date: {
           gte: new Date(`${date}T00:00:00.000Z`), // Start of the day
-          lt: new Date(`${date}T24:00:00.000Z`), // Start of the next day (or 00:00:00 of the next day)
+          lt: new Date(`${date}T24:00:00.000Z`), // End of the day
         },
-      }, // Convert date string to Date object
+      },
+      include: { bus: true }, // Include the bus details
     });
 
     console.log("Found Buses:", foundBuses);

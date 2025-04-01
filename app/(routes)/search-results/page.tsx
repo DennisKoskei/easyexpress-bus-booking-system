@@ -1,17 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { formatDate, formatTime } from "@utils/dateUtils"; // Adjust path as needed
 
 interface Bus {
-  id: number;
+  routeId: string;
   departure: string;
   destination: string;
   date: string;
   time: string;
-  seats: number;
+  totalSeats: number;
+  plateNumber: string;
   amount: number;
+  busId: string; // Assuming each bus has a unique route ID
 }
 
 const SearchResultsPage = () => {
@@ -48,7 +51,6 @@ const SearchResultsPage = () => {
         }
 
         setBuses(data.foundBuses);
-        console.log("Found buses: ", data);
       } catch (error) {
         console.error("Error fetching buses:", error);
         router.push("/"); // Redirect on error
@@ -59,6 +61,11 @@ const SearchResultsPage = () => {
 
     fetchBuses();
   }, [departure, destination, date, router]);
+
+  // Handle Booking Button Click
+  const handleBooking = (busId: string, routeId: string) => {
+    router.push(`/booking?busId=${busId}&routeId=${routeId}`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -98,15 +105,25 @@ const SearchResultsPage = () => {
           ) : (
             buses.map((bus) => (
               <div
-                key={bus.id}
+                key={bus.routeId}
                 className="bg-white shadow-lg rounded-lg p-4 mb-4"
               >
                 <h2 className="text-lg font-bold text-blue-700">
                   {bus.departure} → {bus.destination}
                 </h2>
                 <div className="flex flex-row gap-4 mt-3">
-                  <div className="h-32 w-32 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
-                    🚌 Bus Image
+                  <div className="flex flex-col">
+                    <div className="h-32 w-32  relative bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                      <Image
+                        // src={`/images/buses/${bus.plateNumber}.jpg`}
+                        src={`/Assets/bus-image-small.png`}
+                        alt={bus.busId}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        className="absolute rounded-2xl"
+                      />
+                    </div>
+                    <p className="font-semibold"> KAA 121A </p>
                   </div>
                   <div className="flex flex-col w-3/4">
                     <div className="grid grid-cols-4 gap-4">
@@ -131,7 +148,7 @@ const SearchResultsPage = () => {
                       <div>
                         <p className="text-gray-600">Available Seats:</p>
                         <p className="text-xl font-bold text-green-600">
-                          {bus.seats}
+                          {bus.totalSeats}
                         </p>
                       </div>
                       <div>
@@ -141,7 +158,10 @@ const SearchResultsPage = () => {
                         </p>
                       </div>
                       <div className="flex justify-end">
-                        <button className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all">
+                        <button
+                          onClick={() => handleBooking(bus.routeId, bus.busId)}
+                          className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all"
+                        >
                           Book Seat
                         </button>
                       </div>
