@@ -14,7 +14,7 @@ import { prisma } from "@utils/prisma";
 export async function GET() {
   try {
     const users = await prisma.user.findMany();
-    console.log("API Fetch Users:", users); // ✅ Console log in API route
+    console.log("API Fetch Users --> :", users); // ✅ Console log in API route
     return NextResponse.json(users);
   } catch (error) {
     console.error("API Error fetching users:", error);
@@ -28,7 +28,16 @@ export async function GET() {
 // 🔵 POST: ADD A NEW USER
 export async function POST(req: Request) {
   try {
-    const { firstName, lastName, email, phone, role } = await req.json();
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      passwordHash,
+      gender,
+      age,
+      role,
+    } = await req.json();
 
     if (!email || !role) {
       return NextResponse.json(
@@ -38,7 +47,16 @@ export async function POST(req: Request) {
     }
 
     const newUser = await prisma.user.create({
-      data: { firstName, lastName, email, phone, role },
+      data: {
+        firstName,
+        lastName,
+        email,
+        phone,
+        passwordHash,
+        gender,
+        age,
+        role,
+      },
     });
 
     console.log("User Created:", newUser);
@@ -55,7 +73,8 @@ export async function POST(req: Request) {
 // 🟠 PUT: UPDATE A USER BY ID
 export async function PUT(req: Request) {
   try {
-    const { id, name, email, role } = await req.json();
+    const { id, firstName, lastName, email, phone, gender, role } =
+      await req.json();
 
     if (!id) {
       return NextResponse.json(
@@ -66,7 +85,7 @@ export async function PUT(req: Request) {
 
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { name, email, role },
+      data: { firstName, lastName, email, phone, gender, role },
     });
 
     console.log("User Updated:", updatedUser);
