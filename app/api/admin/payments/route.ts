@@ -13,11 +13,14 @@ import { prisma } from "@utils/prisma";
 // 🟢 GET: FETCH ALL PAYMENTS
 export async function GET() {
   try {
-    const payments = await prisma.payment.findMany({
-      include: {
-        booking: true,
-      },
-    });
+    const payments = await prisma.payment.findMany();
+
+    // const payments = await prisma.payment.findMany({
+    //   include: {
+    //     booking: true,
+    //   },
+    // });
+
     console.log("API Fetch Payments:", payments);
     return NextResponse.json(payments);
   } catch (error) {
