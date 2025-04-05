@@ -13,9 +13,8 @@ import { prisma } from "@utils/prisma";
 // 🟢 GET: FETCH ALL DRIVERS
 export async function GET() {
   try {
-    const drivers = await prisma.driver.findMany({
-      include: { bus: true },
-    });
+    const drivers = await prisma.driver.findMany();
+    // include: { bus: true },
     console.log("API Fetch Drivers:", drivers);
     return NextResponse.json(drivers);
   } catch (error) {
