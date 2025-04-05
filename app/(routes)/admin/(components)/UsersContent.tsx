@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import NewUserForm from "./NewUserForm";
-import { FaEdit, FaTrash, FaSave, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSave, FaPlus, FaSyncAlt } from "react-icons/fa";
 import { User, EditableUserKeys } from "@/types/user";
 
 const UsersContent: React.FC = () => {
@@ -13,22 +13,23 @@ const UsersContent: React.FC = () => {
   const [editedUser, setEditedUser] = useState<Partial<User> | null>(null);
   const [showAddUserForm, setShowAddUserForm] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/admin/users");
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-        const data: User[] = await response.json();
-        setUsers(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/users");
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
       }
-    };
+      const data: User[] = await response.json();
+      setUsers(data);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUsers();
   }, []);
 
@@ -102,25 +103,47 @@ const UsersContent: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Users</h2>
-        <button
-          className={`px-4 py-2 flex items-center gap-2 ${showAddUserForm
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-blue-600 hover:bg-blue-700"
-            } text-white rounded-lg`}
-          onClick={() => setShowAddUserForm((prev) => !prev)}
-        >
-          {showAddUserForm ? (
-            <>
-              <span>✖ </span>
-              <span>Cancel</span>
-            </>
-          ) : (
-            <>
-              <FaPlus />
-              <span>Add User</span>
-            </>
-          )}
-        </button>
+
+        <div className="flex items-center gap-4">
+          {/* Refresh Button */}
+          <button
+            onClick={fetchUsers}
+            className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-sm rounded-md flex items-center gap-2 disabled:opacity-50"
+            title="Refresh Users"
+            disabled={loading}
+          >
+            <FaSyncAlt
+              className={`text-gray-700 ${loading ? "animate-spin" : ""}`}
+            />
+            <span>{loading ? "Refreshing..." : "Refresh"}</span>
+          </button>
+
+          {/* User Count Display */}
+          <span className="text-sm text-gray-600">
+            Showing | {users.length} of {users.length}
+          </span>
+
+          {/* Toggle Add User Form Button */}
+          <button
+            className={`px-3 py-2 flex items-center gap-2 text-sm ${showAddUserForm
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-blue-600 hover:bg-blue-700"
+              } text-white rounded-lg`}
+            onClick={() => setShowAddUserForm((prev) => !prev)}
+          >
+            {showAddUserForm ? (
+              <>
+                <span>✖</span>
+                <span>Cancel</span>
+              </>
+            ) : (
+              <>
+                <FaPlus />
+                <span>Add User</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {showAddUserForm && (

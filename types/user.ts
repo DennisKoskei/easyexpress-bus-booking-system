@@ -8,7 +8,7 @@ export interface User {
   phone: string;
   gender: "MALE" | "FEMALE";
   age: number;
-  role: "PASSENGER" | "ADMIN" | "DRIVER";
+  role: "PASSENGER" | "ADMIN";
   createdAt: string;
 }
 
@@ -26,5 +26,5 @@ export interface NewUser {
   passwordHash?: string;
   gender?: "MALE" | "FEMALE";
   age?: number;
-  role?: "ADMIN" | "PASSENGER" | "DRIVER";
+  role?: "ADMIN" | "PASSENGER";
 }
