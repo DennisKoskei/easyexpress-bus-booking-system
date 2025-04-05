@@ -9,3 +9,6 @@ export interface Route {
   amount: number;
   busId: string;
 }
+
+// EditableRouteKeys type to define which keys are editable
+export type EditableRouteKeys = keyof Omit<Route, "id">;

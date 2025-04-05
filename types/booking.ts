@@ -1,4 +1,4 @@
-// /types/booking.ts
+// @/types/booking.ts
 
 export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED";
 export type Gender = "MALE" | "FEMALE" | "OTHER";
