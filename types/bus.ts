@@ -16,6 +16,7 @@ export interface Bus {
 }
 
 export interface NewBus {
+  id: string;
   plateNumber: string;
   totalSeats: number;
   busAvatar?: string;

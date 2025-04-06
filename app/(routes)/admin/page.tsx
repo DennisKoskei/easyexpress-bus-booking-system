@@ -15,7 +15,7 @@ import {
   FaUsers,
   FaTicketAlt,
   FaDollarSign,
-  FaCog,
+  FaSignOutAlt,
   FaChartBar,
 } from "react-icons/fa";
 
@@ -25,7 +25,7 @@ const AdminPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <aside className="w-1/4 bg-slate-900 text-white p-6">
+      <aside className="w-1/6 bg-slate-900 flex flex-col text-white py-6 px-4">
         <div className="flex flex-col items-center text-center">
           <Image
             className="rounded-full border-2 border-white"
@@ -82,18 +82,15 @@ const AdminPage = () => {
             >
               <FaDollarSign /> Revenue
             </li>
-            <li
-              className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "settings" ? "bg-blue-800" : "hover:bg-blue-800"}`}
-              onClick={() => setActiveTab("settings")}
-            >
-              <FaCog /> Settings
+            <li className="flex items-center gap-3 p-2 bg-red-500 rounded-lg cursor-pointer hover:bg-red-400">
+              <FaSignOutAlt /> Logout
             </li>
           </ul>
         </nav>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">
+      <main className="w-5/6 flex-1 p-8">
         {/* Header */}
         <header className="bg-white shadow-lg p-6 rounded-lg flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-700">Admin Dashboard</h1>
