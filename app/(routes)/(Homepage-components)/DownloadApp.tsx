@@ -1,11 +1,20 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const DownloadApp = () => {
   return (
     <div className="Download_App flex flex-row items-center justify-between px-20 py-20 bg-blue-100">
       {/* Left: Phone Image */}
-      <div className="w-1/2 flex justify-center">
+      <motion.div
+        className="w-1/2 flex justify-center"
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
         <Image
           src="/Assets/phone-image.png"
           width={500}
@@ -13,10 +22,16 @@ const DownloadApp = () => {
           alt="EasyExpress App"
           className="drop-shadow-lg"
         />
-      </div>
+      </motion.div>
 
       {/* Right: App Info & Download Links */}
-      <div className="w-1/2 flex flex-col gap-6">
+      <motion.div
+        className="w-1/2 flex flex-col gap-6"
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
         <h1 className="text-2xl font-semibold text-gray-800">
           Download EasyExpress App
         </h1>
@@ -30,7 +45,13 @@ const DownloadApp = () => {
         </p>
 
         {/* App Store & Play Store Buttons */}
-        <div className="flex flex-row mt-4 gap-5">
+        <motion.div
+          className="flex flex-row mt-4 gap-5"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <a href="#">
             <Image
               src="/Assets/appstore.png"
@@ -49,10 +70,16 @@ const DownloadApp = () => {
               className="hover:scale-105 transition-transform"
             />
           </a>
-        </div>
+        </motion.div>
 
         {/* Newsletter Section */}
-        <div className="mt-2 bg-white shadow-md rounded-lg px-6 py-5 flex flex-col gap-3">
+        <motion.div
+          className="mt-2 bg-white shadow-md rounded-lg px-6 py-5 flex flex-col gap-3"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
           <h3 className="text-lg font-semibold text-gray-800">
             Subscribe to Our Newsletter
           </h3>
@@ -69,8 +96,8 @@ const DownloadApp = () => {
               Subscribe
             </button>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

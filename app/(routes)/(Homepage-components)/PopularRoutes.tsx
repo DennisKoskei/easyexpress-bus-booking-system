@@ -1,6 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import React from "react";
 import { routes } from "@/app/constants/constants";
+import { motion } from "framer-motion";
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const PopularRoutes = () => {
   return (
@@ -16,8 +24,13 @@ const PopularRoutes = () => {
       {/* Route Cards */}
       <div className="flex flex-row gap-6">
         {routes.map((route, index) => (
-          <div
+          <motion.div
             key={index}
+            variants={cardVariant}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
             className="flex flex-col bg-white shadow-lg rounded-xl overflow-hidden w-1/6 h-80 transform transition duration-300 hover:scale-105"
           >
             <div className="relative h-4/5 w-full">
@@ -32,7 +45,7 @@ const PopularRoutes = () => {
             <div className="h-1/5 flex items-center justify-center text-gray-800 font-semibold text-sm bg-gray-50">
               {route.name}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

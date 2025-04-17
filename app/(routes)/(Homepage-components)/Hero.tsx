@@ -4,7 +4,7 @@ import SearchBox from "./SearchBox";
 
 const Hero = () => {
   return (
-    <div className="relative h-[400px] w-full">
+    <div className="relative h-[510px] w-full">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
