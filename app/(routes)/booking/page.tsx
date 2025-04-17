@@ -3,25 +3,49 @@
 import React, { useState } from "react";
 import { FaBus, FaCheckCircle } from "react-icons/fa";
 
-const BookingPage = () => {
-  const totalSeats = 52;
-  const [selectedSeats, setSelectedSeats] = useState([]);
+const BookingPage: React.FC = () => {
+  const totalSeats = 40;
+  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  const [passengerDetails, setPassengerDetails] = useState<
+    { seat: number; name: string; phone: string; idNumber: string }[]
+  >([]);
 
-  const toggleSeatSelection = (seatNumber) => {
+  const toggleSeatSelection = (seatNumber: number): void => {
     setSelectedSeats((prevSeats) =>
       prevSeats.includes(seatNumber)
         ? prevSeats.filter((seat) => seat !== seatNumber)
         : [...prevSeats, seatNumber],
     );
+
+    setPassengerDetails((prevDetails) =>
+      prevDetails.some((detail) => detail.seat === seatNumber)
+        ? prevDetails.filter((detail) => detail.seat !== seatNumber)
+        : [
+          ...prevDetails,
+          { seat: seatNumber, name: "", phone: "", idNumber: "" },
+        ],
+    );
+  };
+
+  const handleInputChange = (
+    seatNumber: number,
+    field: "name" | "phone" | "idNumber",
+    value: string,
+  ) => {
+    setPassengerDetails((prevDetails) =>
+      prevDetails.map((detail) =>
+        detail.seat === seatNumber ? { ...detail, [field]: value } : detail,
+      ),
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 pt-20 p-6">
       <header className="bg-blue-900 text-white p-4 text-center text-2xl font-semibold rounded-md">
         EasyExpress - Bus Ticket Booking
       </header>
 
-      <div className="container mx-auto flex flex-wrap my-10 gap-6">
+      <div className="container mx-auto md:flex-col flex-row my-10 gap-6">
         {/* Seat Selection Section */}
         <div className="w-full md:w-1/3 p-6 bg-white shadow-lg rounded-lg">
           <h2 className="text-xl font-bold text-center mb-4">
@@ -31,7 +55,10 @@ const BookingPage = () => {
             {Array.from({ length: totalSeats }, (_, i) => i + 1).map((seat) => (
               <button
                 key={seat}
-                className={`w-12 h-12 flex items-center justify-center border rounded-md font-semibold ${selectedSeats.includes(seat) ? "bg-green-600 text-white" : "bg-gray-300"}`}
+                className={`w-12 h-12 flex items-center justify-center border rounded-md font-semibold ${selectedSeats.includes(seat)
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-300"
+                  }`}
                 onClick={() => toggleSeatSelection(seat)}
               >
                 {selectedSeats.includes(seat) ? <FaCheckCircle /> : seat}
@@ -63,23 +90,54 @@ const BookingPage = () => {
           {/* Booking Form */}
           <div className="p-4 bg-gray-200 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Booking Submission</h2>
-            <form>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <input
-                  type="text"
-                  name="firstName"
-                  placeholder="First Name"
-                  className="p-2 border rounded-md"
-                  required
-                />
-                <input
-                  type="text"
-                  name="lastName"
-                  placeholder="Last Name"
-                  className="p-2 border rounded-md"
-                  required
-                />
-              </div>
+            <form className="px-2">
+              {selectedSeats.length > 0 && (
+                <>
+                  {passengerDetails.map(({ seat, name, phone, idNumber }) => (
+                    <div
+                      key={seat}
+                      className="flex flex-row gap-4 mb-2 bg-white p-2 rounded-lg border"
+                    >
+                      <p className="text-lg w-1/12 font-semibold text-center">
+                        Seat {seat}
+                      </p>
+                      <div className="flex flex-row w-5/6 gap-4">
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) =>
+                            handleInputChange(seat, "name", e.target.value)
+                          }
+                          placeholder="Passenger Name"
+                          className="p-2 border rounded-md w-1/3"
+                          required
+                        />
+                        <input
+                          type="text"
+                          value={phone}
+                          onChange={(e) =>
+                            handleInputChange(seat, "phone", e.target.value)
+                          }
+                          placeholder="Phone No"
+                          className="p-2 border rounded-md w-1/3"
+                          required
+                        />
+                        <input
+                          type="text"
+                          value={idNumber}
+                          onChange={(e) =>
+                            handleInputChange(seat, "idNumber", e.target.value)
+                          }
+                          placeholder="ID Number"
+                          className="p-2 border rounded-md w-1/3"
+                          required
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
               <div className="mb-4">
                 <label className="block text-lg font-semibold mb-2">
                   Selected Seats:
@@ -90,6 +148,7 @@ const BookingPage = () => {
                     : "No seats selected"}
                 </div>
               </div>
+
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold">
                   Total Price:{" "}

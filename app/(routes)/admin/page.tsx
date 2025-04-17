@@ -23,7 +23,7 @@ const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100 flex pt-20">
       {/* Sidebar */}
       <aside className="w-1/6 bg-slate-900 flex flex-col text-white py-6 px-4">
         <div className="flex flex-col items-center text-center">

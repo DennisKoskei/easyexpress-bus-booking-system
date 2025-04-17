@@ -6,7 +6,7 @@ const ProfilePage = async () => {
   await loginIsRequiredServer(); // Ensures user is authenticated before rendering
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100 pt-20">
       <Profile />
     </div>
   );

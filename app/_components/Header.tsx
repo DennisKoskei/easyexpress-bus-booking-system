@@ -8,6 +8,7 @@ import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { verifySession } from "@utils/02-stateless-session";
+import { usePathname } from "next/navigation";
 
 // Function to fetch user avatar from API
 const fetchUserAvatar = async (userId: string) => {
@@ -24,13 +25,22 @@ const fetchUserAvatar = async (userId: string) => {
 
 const Header = () => {
   const { data: session } = useSession(); // NextAuth session
+  const pathname = usePathname(); // <== Get current path
   const [userId, setUserId] = useState<string | null>(null);
   const [avatar, setAvatar] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Fetch user session & avatar on mount
+  // Define routes where we want the transparent-to-colored scroll effect
+  const scrollHeaderRoutes = ["/", "/login"];
+  const shouldScrollEffect = scrollHeaderRoutes.includes(pathname);
+
+  // Set default based on route
+  const [isScrolled, setIsScrolled] = useState(() =>
+    shouldScrollEffect ? false : true,
+  );
+
   useEffect(() => {
+    // Fetch session and avatar
     const getSessionData = async () => {
       try {
         const id = await verifySession();
@@ -45,18 +55,20 @@ const Header = () => {
     };
     getSessionData();
 
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    // Attach scroll listener only for selected routes
+    if (shouldScrollEffect) {
+      const handleScroll = () => {
+        setIsScrolled(window.scrollY > 50);
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }
+  }, [shouldScrollEffect]);
 
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-blue-800 shadow-md" : "bg-transparent"
-        }`}
+        } ${!shouldScrollEffect ? "bg-blue-900 shadow-md" : ""}`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-20">
         {/* LOGO */}
