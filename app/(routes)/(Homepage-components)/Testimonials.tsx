@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { testimonials } from "@/app/constants/constants";
 
 const Testimonials = () => {
   const testimonialVariant = {
@@ -30,24 +31,7 @@ const Testimonials = () => {
 
       {/* Testimonial Cards */}
       <div className="flex flex-col md:flex-row relative z-20 gap-6">
-        {[
-          {
-            text: "EasyExpress made my travel so much easier! The booking process was seamless, and the bus was extremely comfortable.",
-            name: "James Mwangi",
-          },
-          {
-            text: "I loved how punctual and professional the drivers were. I highly recommend EasyExpress for long-distance travel.",
-            name: "Aisha Hassan",
-          },
-          {
-            text: "The customer service is top-notch. I had an issue with my booking, and they resolved it within minutes!",
-            name: "Michael Otieno",
-          },
-          {
-            text: "Safe, clean, and reliable. I always choose EasyExpress for my travels, and they never disappoint!",
-            name: "Esther Kamau",
-          },
-        ].map((testimonial, index) => (
+        {testimonials.map((testimonial, index) => (
           <motion.div
             key={index}
             variants={testimonialVariant}

@@ -57,3 +57,22 @@ export const teamMembers = [
       "Crafting innovative technology solutions for the best user experience.",
   },
 ];
+
+export const testimonials = [
+  {
+    text: "EasyExpress made my travel so much easier! The booking process was seamless, and the bus was extremely comfortable.",
+    name: "James Mwangi",
+  },
+  {
+    text: "I loved how punctual and professional the drivers were. I highly recommend EasyExpress for long-distance travel.",
+    name: "Aisha Hassan",
+  },
+  {
+    text: "The customer service is top-notch. I had an issue with my booking, and they resolved it within minutes!",
+    name: "Michael Otieno",
+  },
+  {
+    text: "Safe, clean, and reliable. I always choose EasyExpress for my travels, and they never disappoint!",
+    name: "Esther Kamau",
+  },
+];
