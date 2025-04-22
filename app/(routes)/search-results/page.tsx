@@ -68,7 +68,7 @@ const SearchResultsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-24">
+    <div className="bg-slate-50 mx-auto px-8 py-24">
       {/* Search Summary */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-blue-700">Available Buses</h1>
@@ -76,8 +76,12 @@ const SearchResultsPage = () => {
           Showing results for:{" "}
           <span className="font-semibold text-blue-500">
             {departure} → {destination}
-          </span>{" "}
-          on {formatDate(date)}
+          </span>
+          {"  "} on
+          {"  "}
+          <span className="font-semibold text-blue-500">
+            {formatDate(date)}
+          </span>
         </p>
       </div>
 
@@ -106,7 +110,7 @@ const SearchResultsPage = () => {
             buses.map((bus) => (
               <div
                 key={bus.routeId}
-                className="bg-white shadow-lg rounded-lg p-4 mb-4"
+                className="bg-white shadow-xl rounded-lg p-4 mb-4"
               >
                 <h2 className="text-lg font-bold text-blue-700">
                   {bus.departure} → {bus.destination}
@@ -123,7 +127,9 @@ const SearchResultsPage = () => {
                         className="absolute rounded-2xl"
                       />
                     </div>
-                    <p className="font-semibold"> KAA 121A </p>
+                    <p className="font-semibold text-sm pt-1">
+                      {bus.plateNumber}
+                    </p>
                   </div>
                   <div className="flex flex-col w-3/4">
                     <div className="grid grid-cols-4 gap-4">
@@ -144,7 +150,7 @@ const SearchResultsPage = () => {
                         <p className="font-semibold">{formatTime(bus.time)}</p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="grid grid-cols-4 gap-4 mt-4">
                       <div>
                         <p className="text-gray-600">Available Seats:</p>
                         <p className="text-xl font-bold text-green-600">
@@ -157,9 +163,10 @@ const SearchResultsPage = () => {
                           {bus.amount} /=
                         </p>
                       </div>
+                      <div className="flex items-center justify-center"></div>
                       <div className="flex justify-end">
                         <button
-                          onClick={() => handleBooking(bus.routeId, bus.busId)}
+                          onClick={() => handleBooking(bus.busId, bus.routeId)}
                           className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all"
                         >
                           Book Seat

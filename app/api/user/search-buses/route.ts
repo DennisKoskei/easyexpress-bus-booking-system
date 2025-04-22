@@ -25,13 +25,32 @@ export async function POST(req: Request) {
           lt: new Date(`${date}T24:00:00.000Z`), // End of the day
         },
       },
-      include: { bus: true }, // Include the bus details
+      include: {
+        bus: true,
+        // routeSeats: true,
+      },
     });
 
     console.log("Found Buses:", foundBuses);
 
-    // No need for a null check here. findMany always returns an array.
-    return NextResponse.json({ foundBuses }, { status: 200 });
+    // Transforming data to explicitly include busId
+    const busesWithId = foundBuses.map((route) => ({
+      routeId: route.id, // Route ID
+      busId: route.bus?.id ?? null, // Include busId explicitly
+      plateNumber: route.bus?.plateNumber ?? null, // Include bus plate number if available
+      departure: route.departure,
+      destination: route.destination,
+      date: route.date,
+      time: route.time,
+      amount: route.amount,
+      totalSeats: route.bus?.totalSeats ?? null, // Include total seats if available
+      busAvatar: route.bus?.busAvatar ?? null, // Include bus avatar if available
+      driverId: route.bus?.driverId ?? null, // Include driver ID if available
+    }));
+
+    console.log("Found Transformed Bues :-->:", busesWithId);
+
+    return NextResponse.json({ foundBuses: busesWithId }, { status: 200 });
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json(
