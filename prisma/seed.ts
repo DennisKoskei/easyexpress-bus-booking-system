@@ -2,393 +2,316 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+async function createSeatsForBus(bus: any) {
+  // Generate numeric seat numbers from 1 to totalSeats
+  const seatsData = Array.from({ length: bus.totalSeats }, (_, i) => ({
+    seatNumber: i + 1,
+    busId: bus.id,
+  }));
+  await prisma.seat.createMany({ data: seatsData });
+}
+
+interface AssignedSeat {
+  seat: { id: string; seatNumber: number };
+  routeSeat: { id: string; seatId: string };
+}
+
+async function assignRouteSeats(
+  route: any,
+  bus: any,
+  limit = 5,
+): Promise<AssignedSeat[]> {
+  // Take first `limit` seats for this route and create RouteSeat entries, returning both
+  const seats = await prisma.seat.findMany({
+    where: { busId: bus.id },
+    take: limit,
+  });
+  const assigned: AssignedSeat[] = [];
+  for (const seat of seats) {
+    const routeSeat = await prisma.routeSeat.create({
+      data: {
+        routeId: route.id,
+        seatId: seat.id,
+      },
+    });
+    assigned.push({
+      seat: { id: seat.id, seatNumber: seat.seatNumber },
+      routeSeat,
+    });
+  }
+  return assigned;
+}
+
 async function main() {
   console.log("Seeding database...");
 
   // Create Users
-  const user1 = await prisma.user.create({
-    data: {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      phone: "+1234567890",
-      passwordHash: "hashedpassword123",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user2 = await prisma.user.create({
-    data: {
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane.smith@example.com",
-      phone: "+1987654321",
-      passwordHash: "hashedpassword456",
-      gender: "FEMALE",
-      age: 25,
-      role: "PASSENGER",
-    },
-  });
-
-  const user3 = await prisma.user.create({
-    data: {
-      firstName: "Elanor",
-      lastName: "Smith",
-      email: "elanor.smith@example.com",
-      phone: "0722334455",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user4 = await prisma.user.create({
-    data: {
-      firstName: "Alex",
-      lastName: "Kamini",
-      email: "alex.kamini@example.com",
-      phone: "0733445566",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user5 = await prisma.user.create({
-    data: {
-      firstName: "Proce",
-      lastName: "Elixir",
-      email: "proce.elixir@example.com",
-      phone: "0744556677",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user6 = await prisma.user.create({
-    data: {
-      firstName: "James",
-      lastName: "Gunn",
-      email: "james.gunn@example.com",
-      phone: "0755667788",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user7 = await prisma.user.create({
-    data: {
-      firstName: "Goliato",
-      lastName: "Budai",
-      email: "goliato.budai@example.com",
-      phone: "0766778899",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user8 = await prisma.user.create({
-    data: {
-      firstName: "Scarlett",
-      lastName: "Witch",
-      email: "scarlett.witch@example.com",
-      phone: "0700112233",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user9 = await prisma.user.create({
-    data: {
-      firstName: "Tony",
-      lastName: "Stark",
-      email: "tony.stark@example.com",
-      phone: "0705123456",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
-
-  const user10 = await prisma.user.create({
-    data: {
-      firstName: "Peter",
-      lastName: "Parker",
-      email: "peter.parker@example.com",
-      phone: "0711558822",
-      passwordHash: "hashedpassword923",
-      gender: "MALE",
-      age: 30,
-      role: "PASSENGER",
-    },
-  });
+  const users = await Promise.all([
+    prisma.user.create({
+      data: {
+        firstName: "John",
+        lastName: "Doe",
+        email: "john.doe@example.com",
+        phone: "+1234567890",
+        passwordHash: "hashedpassword123",
+        gender: "MALE",
+        age: 30,
+        role: "PASSENGER",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        firstName: "Jane",
+        lastName: "Smith",
+        email: "jane.smith@example.com",
+        phone: "+1987654321",
+        passwordHash: "hashedpassword456",
+        gender: "FEMALE",
+        age: 25,
+        role: "PASSENGER",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        firstName: "Alice",
+        lastName: "Brown",
+        email: "alice.brown@example.com",
+        phone: "+1112223333",
+        passwordHash: "hashedpassword789",
+        gender: "FEMALE",
+        age: 28,
+        role: "PASSENGER",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        firstName: "Bob",
+        lastName: "Williams",
+        email: "bob.williams@example.com",
+        phone: "+4445556666",
+        passwordHash: "hashedpassword101",
+        gender: "MALE",
+        age: 32,
+        role: "PASSENGER",
+      },
+    }),
+    prisma.user.create({
+      data: {
+        firstName: "Clara",
+        lastName: "Evans",
+        email: "clara.evans@example.com",
+        phone: "+7778889999",
+        passwordHash: "hashedpassword202",
+        gender: "FEMALE",
+        age: 27,
+        role: "PASSENGER",
+      },
+    }),
+  ]);
 
   // Create Drivers
-  const driver1 = await prisma.driver.create({
-    data: {
-      firstName: "Mike",
-      lastName: "Johnson",
-      phone: "0723456789",
-      licenseNo: "KBN-123X",
-      experience: 5,
-    },
-  });
+  const drivers = await Promise.all([
+    prisma.driver.create({
+      data: {
+        firstName: "Mike",
+        lastName: "Johnson",
+        phone: "0723456789",
+        licenseNo: "KBN-123X",
+        experience: 5,
+      },
+    }),
+    prisma.driver.create({
+      data: {
+        firstName: "Samuel",
+        lastName: "Green",
+        phone: "0712345678",
+        licenseNo: "KBN-234Y",
+        experience: 3,
+      },
+    }),
+    prisma.driver.create({
+      data: {
+        firstName: "Eleanor",
+        lastName: "Stone",
+        phone: "0734567890",
+        licenseNo: "KBN-345Z",
+        experience: 4,
+      },
+    }),
+    prisma.driver.create({
+      data: {
+        firstName: "Henry",
+        lastName: "Ford",
+        phone: "0700112233",
+        licenseNo: "KBN-456A",
+        experience: 6,
+      },
+    }),
+    prisma.driver.create({
+      data: {
+        firstName: "Grace",
+        lastName: "Lewis",
+        phone: "0799988776",
+        licenseNo: "KBN-567B",
+        experience: 2,
+      },
+    }),
+  ]);
 
-  const driver2 = await prisma.driver.create({
-    data: {
-      firstName: "Mike",
-      lastName: "Johnson",
-      phone: "0734567890",
-      licenseNo: "KCT-234X",
-      experience: 5,
-    },
-  });
+  // Create Buses
+  const buses = await Promise.all([
+    prisma.bus.create({
+      data: {
+        plateNumber: "KAA-123A",
+        totalSeats: 40,
+        busAvatar: "https://example.com/bus1.jpg",
+        driverId: drivers[0].id,
+      },
+    }),
+    prisma.bus.create({
+      data: {
+        plateNumber: "KBB-234B",
+        totalSeats: 45,
+        busAvatar: "https://example.com/bus2.jpg",
+        driverId: drivers[1].id,
+      },
+    }),
+    prisma.bus.create({
+      data: {
+        plateNumber: "KCC-345C",
+        totalSeats: 50,
+        busAvatar: "https://example.com/bus3.jpg",
+        driverId: drivers[2].id,
+      },
+    }),
+    prisma.bus.create({
+      data: {
+        plateNumber: "KDD-456D",
+        totalSeats: 42,
+        busAvatar: "https://example.com/bus4.jpg",
+        driverId: drivers[3].id,
+      },
+    }),
+    prisma.bus.create({
+      data: {
+        plateNumber: "KEE-567E",
+        totalSeats: 38,
+        busAvatar: "https://example.com/bus5.jpg",
+        driverId: drivers[4].id,
+      },
+    }),
+  ]);
 
-  const driver3 = await prisma.driver.create({
-    data: {
-      firstName: "Mike",
-      lastName: "Johnson",
-      phone: "0745678901",
-      licenseNo: "KBN-124X",
-      experience: 5,
-    },
-  });
+  // Seed Seats for each Bus
+  await Promise.all(buses.map((bus) => createSeatsForBus(bus)));
 
-  const driver4 = await prisma.driver.create({
-    data: {
-      firstName: "Mike",
-      lastName: "Johnson",
-      phone: "0756789012",
-      licenseNo: "KAX-112L",
-      experience: 5,
-    },
-  });
+  // Create Routes
+  const routes = await Promise.all([
+    prisma.route.create({
+      data: {
+        departure: "New York",
+        destination: "Washington DC",
+        date: new Date("2025-05-20"),
+        time: "08:00 AM",
+        amount: 50.0,
+        busId: buses[0].id,
+      },
+    }),
+    prisma.route.create({
+      data: {
+        departure: "Boston",
+        destination: "Philadelphia",
+        date: new Date("2025-05-21"),
+        time: "09:00 AM",
+        amount: 45.0,
+        busId: buses[1].id,
+      },
+    }),
+    prisma.route.create({
+      data: {
+        departure: "Chicago",
+        destination: "Detroit",
+        date: new Date("2025-05-22"),
+        time: "07:30 AM",
+        amount: 55.0,
+        busId: buses[2].id,
+      },
+    }),
+    prisma.route.create({
+      data: {
+        departure: "Seattle",
+        destination: "Portland",
+        date: new Date("2025-05-23"),
+        time: "10:00 AM",
+        amount: 40.0,
+        busId: buses[3].id,
+      },
+    }),
+    prisma.route.create({
+      data: {
+        departure: "San Francisco",
+        destination: "Los Angeles",
+        date: new Date("2025-05-24"),
+        time: "11:00 AM",
+        amount: 60.0,
+        busId: buses[4].id,
+      },
+    }),
+  ]);
 
-  const driver5 = await prisma.driver.create({
-    data: {
-      firstName: "Mike",
-      lastName: "Johnson",
-      phone: "0712345678",
-      licenseNo: "KBC-001A",
-      experience: 5,
-    },
-  });
+  // Assign and seed seats to first route as example
+  const assigned = await assignRouteSeats(routes[0], buses[0]);
 
-  // Create Bus
-  const bus1 = await prisma.bus.create({
-    data: {
-      plateNumber: "KAA-123A",
-      totalSeats: 40,
-      busAvatar: "https://example.com/bus1.jpg",
-      driverId: driver1.id,
-    },
-  });
+  // Bookings, BookingSeats, Payments, Tickets for example route
+  for (let i = 0; i < assigned.length; i++) {
+    const { seat, routeSeat } = assigned[i];
+    const user = users[i];
+    const bookingStatus = ["PENDING", "PAID", "CANCELED"][i % 3] as any;
+    const paymentMethod = ["MPESA", "PAYPAL"][i % 2] as any;
+    const paymentStatus = ["SUCCESSFUL", "FAILED"][i % 2] as any;
+    const transactionId = `TXN${Date.now()}${i}`;
 
-  const bus2 = await prisma.bus.create({
-    data: {
-      plateNumber: "KAA-123B",
-      totalSeats: 40,
-      busAvatar: "https://example.com/bus1.jpg",
-      driverId: driver2.id,
-    },
-  });
+    // Create Booking
+    const booking = await prisma.booking.create({
+      data: {
+        userId: user.id,
+        routeId: routes[0].id,
+        passengerName: `${user.firstName} ${user.lastName}`,
+        passengerPhone: user.phone,
+        passengerGender: user.gender,
+        status: bookingStatus,
+      },
+    });
 
-  const bus3 = await prisma.bus.create({
-    data: {
-      plateNumber: "KAA-123C",
-      totalSeats: 40,
-      busAvatar: "https://example.com/bus1.jpg",
-      driverId: driver3.id,
-    },
-  });
+    // Link BookingSeat properly using routeSeat id
+    const bookingSeat = await prisma.bookingSeat.create({
+      data: { bookingId: booking.id, routeSeatId: routeSeat.id },
+    });
 
-  const bus4 = await prisma.bus.create({
-    data: {
-      plateNumber: "KAA-123D",
-      totalSeats: 40,
-      busAvatar: "https://example.com/bus1.jpg",
-      driverId: driver4.id,
-    },
-  });
+    // Create Payment
+    await prisma.payment.create({
+      data: {
+        bookingId: booking.id,
+        amountPaid: routes[0].amount,
+        paymentMethod: paymentMethod,
+        transactionId: transactionId,
+        status: paymentStatus,
+      },
+    });
 
-  const bus5 = await prisma.bus.create({
-    data: {
-      plateNumber: "KAA-123E",
-      totalSeats: 40,
-      busAvatar: "https://example.com/bus1.jpg",
-      driverId: driver5.id,
-    },
-  });
-
-  // Create Route
-  const route1 = await prisma.route.create({
-    data: {
-      departure: "New York",
-      destination: "Washington DC",
-      date: new Date("2025-05-20"),
-      time: "08:00 AM",
-      amount: 50.0,
-      busId: bus1.id,
-    },
-  });
-
-  const route2 = await prisma.route.create({
-    data: {
-      departure: "New York",
-      destination: "Washington DC",
-      date: new Date("2025-05-20"),
-      time: "08:00 AM",
-      amount: 50.0,
-      busId: bus2.id,
-    },
-  });
-
-  const route3 = await prisma.route.create({
-    data: {
-      departure: "New York",
-      destination: "Washington DC",
-      date: new Date("2025-05-20"),
-      time: "08:00 AM",
-      amount: 50.0,
-      busId: bus3.id,
-    },
-  });
-
-  const route4 = await prisma.route.create({
-    data: {
-      departure: "New York",
-      destination: "Washington DC",
-      date: new Date("2025-05-20"),
-      time: "08:00 AM",
-      amount: 50.0,
-      busId: bus4.id,
-    },
-  });
-
-  const route5 = await prisma.route.create({
-    data: {
-      departure: "New York",
-      destination: "Washington DC",
-      date: new Date("2025-05-20"),
-      time: "08:00 AM",
-      amount: 50.0,
-      busId: bus5.id,
-    },
-  });
-
-  // Create Seats
-  const seat1 = await prisma.seat.create({
-    data: {
-      busId: bus1.id,
-      seatNumber: 1,
-      status: "AVAILABLE",
-    },
-  });
-
-  const seat2 = await prisma.seat.create({
-    data: {
-      busId: bus2.id,
-      seatNumber: 2,
-      status: "AVAILABLE",
-    },
-  });
-
-  const seat3 = await prisma.seat.create({
-    data: {
-      busId: bus3.id,
-      seatNumber: 2,
-      status: "AVAILABLE",
-    },
-  });
-
-  const seat4 = await prisma.seat.create({
-    data: {
-      busId: bus4.id,
-      seatNumber: 2,
-      status: "AVAILABLE",
-    },
-  });
-
-  const seat5 = await prisma.seat.create({
-    data: {
-      busId: bus5.id,
-      seatNumber: 2,
-      status: "AVAILABLE",
-    },
-  });
-
-  // Create Booking
-  const booking1 = await prisma.booking.create({
-    data: {
-      userId: user1.id,
-      routeId: route1.id,
-      seatId: seat1.id,
-      passengerName: user1.firstName + " " + user1.lastName,
-      passengerPhone: user1.phone,
-      passengerGender: user1.gender,
-      status: "PENDING",
-    },
-  });
-  const booking2 = await prisma.booking.create({
-    data: {
-      userId: user2.id,
-      routeId: route1.id,
-      seatId: seat1.id,
-      passengerName: user1.firstName + " " + user1.lastName,
-      passengerPhone: user1.phone,
-      passengerGender: user1.gender,
-      status: "PENDING",
-    },
-  });
-
-  const booking3 = await prisma.booking.create({
-    data: {
-      userId: user3.id,
-      routeId: route1.id,
-      seatId: seat1.id,
-      passengerName: user1.firstName + " " + user1.lastName,
-      passengerPhone: user1.phone,
-      passengerGender: user1.gender,
-      status: "PENDING",
-    },
-  });
-
-  const booking4 = await prisma.booking.create({
-    data: {
-      userId: user4.id,
-      routeId: route1.id,
-      seatId: seat1.id,
-      passengerName: user1.firstName + " " + user1.lastName,
-      passengerPhone: user1.phone,
-      passengerGender: user1.gender,
-      status: "PENDING",
-    },
-  });
-
-  const booking5 = await prisma.booking.create({
-    data: {
-      userId: user5.id,
-      routeId: route1.id,
-      seatId: seat5.id,
-      passengerName: user1.firstName + " " + user1.lastName,
-      passengerPhone: user1.phone,
-      passengerGender: user1.gender,
-      status: "PENDING",
-    },
-  });
+    // Create Ticket
+    await prisma.ticket.create({
+      data: {
+        passengerId: user.id,
+        bookingSeatId: bookingSeat.id,
+        routeId: routes[0].id,
+        seatNumber: seat.seatNumber,
+        busPlate: buses[0].plateNumber,
+        price: routes[0].amount,
+        qrCode: `QR${Date.now()}${i}`,
+      },
+    });
+  }
 
   console.log("Database seeded successfully!");
 }

@@ -13,6 +13,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  PASSENGER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum SeatStatus {
+  AVAILABLE
+  BOOKED
+}
+
+enum BookingStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+enum PaymentMethod {
+  MPESA
+  PAYPAL
+}
+
+enum PaymentStatus {
+  SUCCESSFUL
+  FAILED
+}
+
 model User {
   id           String    @id @default(cuid())
   firstName    String
@@ -28,17 +60,6 @@ model User {
   createdAt    DateTime  @default(now())
 }
 
-enum Role {
-  PASSENGER
-  ADMIN
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
 model Bus {
   id          String  @id @default(cuid())
   plateNumber String  @unique
@@ -46,53 +67,58 @@ model Bus {
   busAvatar   String?
   driverId    String  @unique
   driver      Driver  @relation(fields: [driverId], references: [id])
-  routes      Route[]
   seats       Seat[]
+  routes      Route[]
 }
 
 model Driver {
-  id         String  @id @default(cuid())
+  id         String @id @default(cuid())
   firstName  String
   lastName   String
-  phone      String  @unique
-  licenseNo  String  @unique
+  phone      String @unique
+  licenseNo  String @unique
   experience Int
   bus        Bus?
 }
 
+model Seat {
+  id         String      @id @default(cuid())
+  busId      String
+  seatNumber Int
+  bus        Bus         @relation(fields: [busId], references: [id])
+  routeSeats RouteSeat[]
+}
+
 model Route {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   departure   String
   destination String
   date        DateTime
   time        String
   amount      Float
   busId       String
-  bus         Bus      @relation(fields: [busId], references: [id])
+  bus         Bus         @relation(fields: [busId], references: [id])
   bookings    Booking[]
   tickets     Ticket[]
+  routeSeats  RouteSeat[]
 }
 
-model Seat {
-  id         String     @id @default(cuid())
-  busId      String
-  seatNumber Int
-  status     SeatStatus @default(AVAILABLE)
-  bus        Bus        @relation(fields: [busId], references: [id])
-  bookings   Booking[]
-  tickets    Ticket[]
-}
+model RouteSeat {
+  id           String        @id @default(cuid())
+  routeId      String
+  seatId       String
+  status       SeatStatus    @default(AVAILABLE)
+  route        Route         @relation(fields: [routeId], references: [id])
+  seat         Seat          @relation(fields: [seatId], references: [id])
+  bookingSeats BookingSeat[]
 
-enum SeatStatus {
-  AVAILABLE
-  BOOKED
+  @@unique([routeId, seatId])
 }
 
 model Booking {
   id              String        @id @default(cuid())
   userId          String
   routeId         String
-  seatId          String
   passengerName   String
   passengerPhone  String
   passengerGender Gender
@@ -100,15 +126,17 @@ model Booking {
   createdAt       DateTime      @default(now())
   user            User          @relation(fields: [userId], references: [id])
   route           Route         @relation(fields: [routeId], references: [id])
-  seat            Seat          @relation(fields: [seatId], references: [id])
+  bookingSeats    BookingSeat[]
   payment         Payment?
-  ticket          Ticket?
 }
 
-enum BookingStatus {
-  PENDING
-  PAID
-  CANCELED
+model BookingSeat {
+  id          String    @id @default(cuid())
+  bookingId   String
+  routeSeatId String    @unique
+  booking     Booking   @relation(fields: [bookingId], references: [id])
+  routeSeat   RouteSeat @relation(fields: [routeSeatId], references: [id])
+  ticket      Ticket?
 }
 
 model Payment {
@@ -122,27 +150,16 @@ model Payment {
   booking       Booking       @relation(fields: [bookingId], references: [id])
 }
 
-enum PaymentMethod {
-  MPESA
-  PAYPAL
-}
-
-enum PaymentStatus {
-  SUCCESSFUL
-  FAILED
-}
-
 model Ticket {
-  id          String  @id @default(cuid())
-  passengerId String
-  bookingId   String  @unique
-  routeId     String
-  seatId      String
-  busPlate    String
-  price       Float
-  qrCode      String  @unique
-  passenger   User    @relation(fields: [passengerId], references: [id])
-  booking     Booking @relation(fields: [bookingId], references: [id])
-  route       Route   @relation(fields: [routeId], references: [id])
-  seat        Seat    @relation(fields: [seatId], references: [id])
+  id            String      @id @default(cuid())
+  passengerId   String
+  bookingSeatId String      @unique
+  routeId       String
+  seatNumber    Int
+  busPlate      String
+  price         Float
+  qrCode        String      @unique
+  passenger     User        @relation(fields: [passengerId], references: [id])
+  bookingSeat   BookingSeat @relation(fields: [bookingSeatId], references: [id])
+  route         Route       @relation(fields: [routeId], references: [id])
 }
