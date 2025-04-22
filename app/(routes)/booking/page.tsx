@@ -1,14 +1,50 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { FaBus, FaCheckCircle } from "react-icons/fa";
+import { formatDate, formatTime } from "@utils/dateUtils";
+import { formatAmount } from "@utils/amountUtil";
+import { Bus } from "@/types/bus";
+import { Seat } from "@/types/seat";
+import { Route } from "@/types/route";
+import { PassengerDetail } from "@/types/passengerDetails";
 
 const BookingPage: React.FC = () => {
-  const totalSeats = 40;
+  const searchParams = useSearchParams();
+  const busId = searchParams.get("busId");
+  const routeId = searchParams.get("routeId");
+
+  const [route, setRoute] = useState<Route | null>(null);
+  const [bus, setBus] = useState<Bus | null>(null);
+  const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
-  const [passengerDetails, setPassengerDetails] = useState<
-    { seat: number; name: string; phone: string; idNumber: string }[]
-  >([]);
+  const [passengerDetails, setPassengerDetails] = useState<PassengerDetail[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (!busId || !routeId) return;
+
+    const fetchBookingDetails = async () => {
+      try {
+        const response = await fetch(
+          `/api/user/initiate-bookings?busId=${busId}&routeId=${routeId}`,
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const data = await response.json();
+        setRoute(data.route);
+        setBus(data.bus);
+        setSeats(data.seats);
+      } catch (error) {
+        console.error("Error fetching booking data:", error);
+      }
+    };
+
+    fetchBookingDetails();
+  }, [busId, routeId]);
 
   const toggleSeatSelection = (seatNumber: number): void => {
     setSelectedSeats((prevSeats) =>
@@ -39,8 +75,10 @@ const BookingPage: React.FC = () => {
     );
   };
 
+  if (!route || !bus) return <div>Loading...</div>;
+
   return (
-    <div className="min-h-screen bg-gray-100 pt-20 p-6">
+    <div className="min-h-screen bg-gray-100 pt-24 p-6">
       <header className="bg-blue-900 text-white p-4 text-center text-2xl font-semibold rounded-md">
         EasyExpress - Bus Ticket Booking
       </header>
@@ -52,16 +90,21 @@ const BookingPage: React.FC = () => {
             Select Your Seat
           </h2>
           <div className="grid grid-cols-4 gap-3 p-4 bg-gray-200 rounded-lg">
-            {Array.from({ length: totalSeats }, (_, i) => i + 1).map((seat) => (
+            {seats.map((seat) => (
               <button
-                key={seat}
-                className={`w-12 h-12 flex items-center justify-center border rounded-md font-semibold ${selectedSeats.includes(seat)
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-300"
+                key={seat.seatNumber}
+                className={`w-12 h-12 flex items-center justify-center border rounded-md font-semibold ${selectedSeats.includes(seat.seatNumber)
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-300"
                   }`}
-                onClick={() => toggleSeatSelection(seat)}
+                onClick={() => toggleSeatSelection(seat.seatNumber)}
+                disabled={seat.isBooked} // Disable booked seats
               >
-                {selectedSeats.includes(seat) ? <FaCheckCircle /> : seat}
+                {selectedSeats.includes(seat.seatNumber) ? (
+                  <FaCheckCircle />
+                ) : (
+                  seat.seatNumber
+                )}
               </button>
             ))}
           </div>
@@ -72,17 +115,24 @@ const BookingPage: React.FC = () => {
           <div className="flex flex-wrap justify-between mb-4">
             <div className="w-1/3 p-4 bg-gray-200 rounded-lg">
               <FaBus className="text-blue-700 text-3xl mx-auto" />
-              <p className="text-center mt-2 font-bold">Nairobi - Kericho</p>
+              <p className="text-center mt-2 font-bold">
+                {route.departure} → {route.destination}
+              </p>
             </div>
             <div className="w-2/3 p-4 bg-gray-200 rounded-lg">
               <p className="text-lg font-semibold">
-                Departure: <span className="font-normal">10:00 AM</span>
+                Date:{" "}
+                <span className="font-normal">{formatDate(route.date)}</span>
               </p>
               <p className="text-lg font-semibold">
-                Arrival: <span className="font-normal">04:00 PM</span>
+                Departure:{" "}
+                <span className="font-normal">{formatTime(route.time)}</span>
               </p>
               <p className="text-lg font-semibold">
-                Price per Seat: <span className="font-normal">1500 /=</span>
+                Price per Seat:{" "}
+                <span className="font-normal">
+                  {formatAmount(route.amount)} /=
+                </span>
               </p>
             </div>
           </div>
@@ -153,7 +203,7 @@ const BookingPage: React.FC = () => {
                 <h3 className="text-lg font-semibold">
                   Total Price:{" "}
                   <span className="font-bold">
-                    {selectedSeats.length * 1500} /=
+                    {formatAmount(selectedSeats.length * route.amount)} /=
                   </span>
                 </h3>
                 <button

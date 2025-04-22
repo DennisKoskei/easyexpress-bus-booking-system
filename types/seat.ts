@@ -7,4 +7,5 @@ export interface Seat {
   busId: string;
   seatNumber: number;
   status: SeatStatus;
+  isBooked: boolean; //from the booking page
 }
