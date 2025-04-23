@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { FaBus, FaCheckCircle } from "react-icons/fa";
 import { formatDate, formatTime } from "@utils/dateUtils";
 import { formatAmount } from "@utils/amountUtil";
@@ -11,6 +11,7 @@ import { Route } from "@/types/route";
 import { PassengerDetail } from "@/types/passengerDetails";
 
 const BookingPage: React.FC = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const busId = searchParams.get("busId");
   const routeId = searchParams.get("routeId");
@@ -24,7 +25,9 @@ const BookingPage: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!busId || !routeId) return;
+    if (!busId || !routeId) {
+      return router.push("/"); // Redirect if search params are missing
+    }
 
     const fetchBookingDetails = async () => {
       try {
@@ -57,9 +60,9 @@ const BookingPage: React.FC = () => {
       prevDetails.some((detail) => detail.seat === seatNumber)
         ? prevDetails.filter((detail) => detail.seat !== seatNumber)
         : [
-          ...prevDetails,
-          { seat: seatNumber, name: "", phone: "", idNumber: "" },
-        ],
+            ...prevDetails,
+            { seat: seatNumber, name: "", phone: "", idNumber: "" },
+          ],
     );
   };
 
@@ -93,10 +96,13 @@ const BookingPage: React.FC = () => {
             {seats.map((seat) => (
               <button
                 key={seat.seatNumber}
-                className={`w-12 h-12 flex items-center justify-center border rounded-md font-semibold ${selectedSeats.includes(seat.seatNumber)
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-300"
-                  }`}
+                className={`w-12 h-12 flex items-center justify-center border rounded-md font-semibold transition-all ${
+                  seat.isBooked
+                    ? "bg-red-500 text-white cursor-not-allowed"
+                    : selectedSeats.includes(seat.seatNumber)
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-300 hover:bg-gray-400"
+                }`}
                 onClick={() => toggleSeatSelection(seat.seatNumber)}
                 disabled={seat.isBooked} // Disable booked seats
               >
