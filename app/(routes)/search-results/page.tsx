@@ -4,18 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { formatDate, formatTime } from "@utils/dateUtils"; // Adjust path as needed
-
-interface Bus {
-  routeId: string;
-  departure: string;
-  destination: string;
-  date: string;
-  time: string;
-  totalSeats: number;
-  plateNumber: string;
-  amount: number;
-  busId: string; // Assuming each bus has a unique route ID
-}
+import { BusList } from "@/types/bus"; // Adjust path as needed
 
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
@@ -24,7 +13,7 @@ const SearchResultsPage = () => {
   const destination = searchParams.get("destination") || "";
   const date = searchParams.get("date") || "";
 
-  const [buses, setBuses] = useState<Bus[]>([]);
+  const [buses, setBuses] = useState<BusList[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
