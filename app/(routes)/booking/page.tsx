@@ -80,6 +80,39 @@ const BookingPage: React.FC = () => {
 
   if (!route || !bus) return <div>Loading...</div>;
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!routeId || !busId) return;
+
+    try {
+      const response = await fetch("/api/user/booking-details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          routeId,
+          busId,
+          passengerDetails,
+          selectedSeats,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Booking failed");
+      }
+
+      alert("Booking successful!");
+      router.push("/payment"); // or confirmation page
+    } catch (err) {
+      console.error("Error submitting booking:", err);
+      alert("An error occurred while booking. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 pt-24 p-6">
       <header className="bg-blue-900 text-white p-4 text-center text-2xl font-semibold rounded-md">
@@ -146,7 +179,7 @@ const BookingPage: React.FC = () => {
           {/* Booking Form */}
           <div className="p-4 bg-gray-200 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Booking Submission</h2>
-            <form className="px-2">
+            <form className="px-2" onSubmit={handleSubmit}>
               {selectedSeats.length > 0 && (
                 <>
                   {passengerDetails.map(({ seat, name, phone, idNumber }) => (
