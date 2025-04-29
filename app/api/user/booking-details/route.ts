@@ -45,6 +45,9 @@ export async function POST(req: Request) {
       });
     }
 
+    const createdBookings: string[] = []; // Array to store created booking IDs
+    const createdBookingSeats: string[] = []; // Array to store created booking seat IDs
+
     for (const detail of passengerDetails) {
       // Creating the Booking in booking table
       const booking = await prisma.booking.create({
@@ -57,9 +60,15 @@ export async function POST(req: Request) {
         },
       });
 
+      createdBookings.push(booking.id); // Add the booking ID to the array
+
       const seat = await prisma.seat.findFirst({
         where: { seatNumber: detail.seat, busId },
       });
+
+      if (!seat) {
+        throw new Error(`Seat ${detail.seat} not found for this bus`);
+      }
 
       const createdRouteSeat = await prisma.seat.findFirst({
         where: { id: seat!.id, busId },
@@ -82,7 +91,7 @@ export async function POST(req: Request) {
       });
 
       if (!routeSeat) {
-        throw new Error(`Seat ${detail.seat} not found for this route`);
+        throw new Error(`Route seat not found for seat ${detail.seat}`);
       }
 
       await prisma.routeSeat.update({
@@ -90,17 +99,26 @@ export async function POST(req: Request) {
         data: { status: "BOOKED" },
       });
 
-      await prisma.bookingSeat.create({
+      const bookingSeat = await prisma.bookingSeat.create({
         data: {
           bookingId: booking.id,
           routeSeatId: routeSeat.id,
         },
       });
+
+      createdBookingSeats.push(bookingSeat.id); // Add the booking seat ID to the array
     }
 
-    return new Response(JSON.stringify({ message: "Booking successful" }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({
+        message: "Booking successful",
+        bookingIds: createdBookings, // Return the booking IDs
+        bookingSeatIds: createdBookingSeats, // Return the booking seat IDs
+      }),
+      {
+        status: 200,
+      },
+    );
   } catch (err) {
     console.error(err);
     return new Response(JSON.stringify({ message: "Internal Server Error" }), {

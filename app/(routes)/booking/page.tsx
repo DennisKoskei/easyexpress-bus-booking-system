@@ -106,7 +106,14 @@ const BookingPage: React.FC = () => {
       }
 
       alert("Booking successful!");
-      router.push("/payment"); // or confirmation page
+
+      // Assuming result contains the bookingIds array
+      const bookingIds = result.bookingIds; // Get the booking IDs from the response
+
+      // Push to the booking page with bookingIds as a query parameter
+      router.push(
+        `/payment?busId=${busId}&routeId=${routeId}&bookingIds=${JSON.stringify(bookingIds)}`,
+      );
     } catch (err) {
       console.error("Error submitting booking:", err);
       alert("An error occurred while booking. Please try again.");

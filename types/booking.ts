@@ -14,3 +14,11 @@ export interface Booking {
   status: BookingStatus;
   createdAt: string;
 }
+
+export interface BookingSummary {
+  id: string;
+  passengerName: string;
+  passengerPhone: string;
+  seatNumber: number;
+  amount: number;
+}
