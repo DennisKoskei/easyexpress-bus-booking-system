@@ -10,5 +10,11 @@ export interface Route {
   busId: string;
 }
 
+export interface SearchData {
+  departure: string;
+  destination: string;
+  date: string;
+}
+
 // EditableRouteKeys type to define which keys are editable
 export type EditableRouteKeys = keyof Omit<Route, "id">;
