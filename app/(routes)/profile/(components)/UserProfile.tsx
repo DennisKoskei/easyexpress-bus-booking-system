@@ -1,10 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaSave, FaTimes, FaCamera } from "react-icons/fa";
+import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
 import { User } from "@/types/user";
 
-const UserProfile: React.FC = () => {
+type UserProfileProps = {
+  reloadFlag: number;
+  setReloadFlag: React.Dispatch<React.SetStateAction<number>>;
+};
+
+const UserProfile: React.FC<UserProfileProps> = ({ setReloadFlag }) => {
   const userId = "cm9lg7ztx0000xtj0w7gpc3xv";
 
   const [user, setUser] = useState<User | null>(null);
@@ -60,6 +65,8 @@ const UserProfile: React.FC = () => {
       setFormData(updated);
       setEditable(false);
       setError("");
+      // After successful update:
+      setReloadFlag((prev) => prev + 1); // You’ll need to pass setReloadFlag as prop or use global state
     } catch (err) {
       console.error("Save error:", err);
       setError("Failed to save profile.");
@@ -112,29 +119,6 @@ const UserProfile: React.FC = () => {
       )}
       {error && (
         <div className="text-center text-red-600 font-semibold">{error}</div>
-      )}
-
-      {/* Profile Photo */}
-      {!loading && !error && user && (
-        <div className="flex flex-col items-center space-y-2">
-          <div className="relative group">
-            <img
-              src="/placeholder-avatar.png"
-              alt="Profile"
-              className="w-32 h-32 rounded-full border-4 border-gray-200 object-cover shadow"
-            />
-            <button
-              className="absolute bottom-1 right-1 bg-white p-2 rounded-full border shadow group-hover:opacity-100 opacity-0 transition"
-              title="Change profile photo (disabled)"
-              disabled
-            >
-              <FaCamera className="text-gray-600" />
-            </button>
-          </div>
-          <p className="text-sm text-gray-500 italic">
-            Profile photo upload is currently disabled.
-          </p>
-        </div>
       )}
 
       {/* Profile Form */}
