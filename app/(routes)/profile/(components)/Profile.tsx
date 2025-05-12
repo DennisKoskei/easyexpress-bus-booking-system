@@ -3,11 +3,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Dashboard from "@app/profile/(components)/Dashboard";
-import EditProfile from "@app/profile/(components)/EditProfile";
 import MyBookings from "@app/profile/(components)/MyBookings";
 import Support from "@app/profile/(components)/Support";
+import UserProfile from "@app/profile/(components)/UserProfile";
 import {
-  FaUserEdit,
   FaTicketAlt,
   FaHeadset,
   FaSignOutAlt,
@@ -15,12 +14,12 @@ import {
 } from "react-icons/fa";
 
 const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState("editProfile");
+  const [activeTab, setActiveTab] = useState("Dashboard");
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <aside className="w-1/4 bg-slate-900 text-white p-6">
+      <aside className="w-1/6 bg-slate-900 text-white p-6">
         <div className="flex flex-col items-center text-center">
           <Image
             className="rounded-full border-2 border-white"
@@ -44,13 +43,6 @@ const ProfilePage = () => {
               <FaChartBar /> Dashboard
             </li>
             <li
-              className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "editProfile" ? "bg-blue-800" : ""
-                }`}
-              onClick={() => setActiveTab("editProfile")}
-            >
-              <FaUserEdit /> Edit Profile
-            </li>
-            <li
               className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "myBookings" ? "bg-blue-800" : ""
                 }`}
               onClick={() => setActiveTab("myBookings")}
@@ -72,16 +64,17 @@ const ProfilePage = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">
+      <main className="w-5/6 flex-1 p-8">
         {/* Header */}
-        <header className="flex flex-col bg-white gap-y-2 shadow-lg p-6 rounded-lg justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-700">My Profile</h1>
+        <header className="flex flex-col bg-white gap-y-2 shadow-lg p-6 rounded-lg">
           <Dashboard />
         </header>
+        <div className="mt-6">
+          <UserProfile />
+        </div>
 
         {/* Profile Content */}
         <div className="mt-6">
-          {activeTab === "editProfile" && <EditProfile />}
           {activeTab === "myBookings" && <MyBookings />}
           {activeTab === "support" && <Support />}
         </div>

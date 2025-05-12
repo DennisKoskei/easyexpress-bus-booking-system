@@ -1,5 +1,5 @@
 /**
- * API Route: /api/users/profile
+ * API Route: /api/user/profile
  * Description: Provides CRUD operations for a specific user's profile.
  * - GET: Fetch the user's details by ID.
  * - PUT: Update the user's profile, including the avatar.
@@ -22,6 +22,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("id"); // Get user ID from query params
+    // const userId = searchParams.get("id"); // Get user ID from query params
 
     if (!userId) {
       return NextResponse.json(
@@ -59,8 +60,8 @@ export async function GET(req: Request) {
   }
 }
 
-// 🟠 POST: UPDATE USER PROFILE WITHOUT AUTHENTICATION
-export async function POST(req: Request) {
+// 🟠 PUT: UPDATE USER PROFILE WITHOUT AUTHENTICATION
+export async function PUT(req: Request) {
   try {
     const { id, ...updateData } = await req.json();
 
