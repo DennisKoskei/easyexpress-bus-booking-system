@@ -27,10 +27,6 @@ const SearchBox: React.FC = () => {
   const [selectedDestinationIndex, setSelectedDestinationIndex] =
     useState<number>(-1);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchData({ ...searchData, [e.target.name]: e.target.value });
-  };
-
   const fetchSuggestions = async (
     field: "departure" | "destination",
     query: string,
@@ -236,7 +232,7 @@ const SearchBox: React.FC = () => {
                 selected={searchData.date ? new Date(searchData.date) : null}
                 onChange={(date: Date | null) => {
                   if (date) {
-                    const formatted = date.toISOString().split("T")[0];
+                    const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
                     setSearchData((prev) => ({ ...prev, date: formatted }));
                   }
                 }}

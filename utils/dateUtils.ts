@@ -49,3 +49,38 @@ export const formatTime = (timeString: string | null | undefined): string => {
 
   return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${formattedPeriod}`;
 };
+
+//** PARSE DATETIME **//
+export const parseDateTime = (dateStr: string, timeStr: string): Date => {
+  const fallback = new Date(dateStr); // fallback to just the date
+
+  if (!timeStr || typeof timeStr !== "string") return fallback;
+
+  const [time, modifier] = timeStr.split(" ");
+  if (!time || !modifier || !["AM", "PM"].includes(modifier)) return fallback;
+
+  const [hourStr, minuteStr] = time.split(":");
+  const hours = parseInt(hourStr, 10);
+  const minutes = parseInt(minuteStr, 10);
+
+  if (
+    isNaN(hours) ||
+    isNaN(minutes) ||
+    hours < 0 ||
+    hours > 12 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    return fallback;
+  }
+
+  let adjustedHours = hours;
+  if (modifier === "PM" && hours < 12) adjustedHours += 12;
+  if (modifier === "AM" && hours === 12) adjustedHours = 0;
+
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return new Date(); // fallback if dateStr is invalid
+
+  date.setHours(adjustedHours, minutes, 0, 0);
+  return date;
+};
