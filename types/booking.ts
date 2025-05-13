@@ -22,3 +22,23 @@ export interface BookingSummary {
   seatNumber: number;
   amount: number;
 }
+
+export type BookingData = {
+  id: string;
+  route: {
+    departure: string;
+    destination: string;
+    date: string;
+    time: string;
+  };
+  passengerName: string;
+  passengerPhone: string;
+  passengerGender: string;
+  createdAt: string;
+  ticket?: {
+    seatNumber: number;
+    busPlate: string;
+    price: number;
+    qrCode: string;
+  };
+};

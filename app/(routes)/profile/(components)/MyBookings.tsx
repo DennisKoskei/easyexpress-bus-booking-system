@@ -4,30 +4,12 @@ import React, { useEffect, useState } from "react";
 import { FaChevronDown, FaDownload } from "react-icons/fa";
 import clsx from "clsx";
 import { parseDateTime } from "@/utils/dateUtils";
-
-type BookingData = {
-  id: string;
-  route: {
-    departure: string;
-    destination: string;
-    date: string; // ISO date string
-    time: string; // e.g. "08:00 AM"
-  };
-  passengerName: string;
-  passengerPhone: string;
-  passengerGender: string;
-  createdAt: string;
-  ticket?: {
-    seatNumber: number;
-    busPlate: string;
-    price: number;
-    qrCode: string;
-  };
-};
+import { BookingData } from "@/types/booking";
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState<BookingData[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [pdfVisibleForId, setPdfVisibleForId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -39,7 +21,6 @@ const MyBookings = () => {
         console.error("Error fetching bookings", err);
       }
     };
-
     fetchBookings();
   }, []);
 
@@ -54,10 +35,12 @@ const MyBookings = () => {
 
   const toggleDropdown = (id: string) => {
     setExpanded((prev) => (prev === id ? null : id));
+    setPdfVisibleForId(null); // hide PDF when toggling
   };
 
   const BookingCard = ({ booking }: { booking: BookingData }) => {
     const isExpanded = expanded === booking.id;
+    const showPdf = pdfVisibleForId === booking.id;
 
     return (
       <div
@@ -104,15 +87,22 @@ const MyBookings = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    window.open(
-                      `/api/user/ticket-pdf?id=${booking.id}`,
-                      "_blank",
+                    setPdfVisibleForId((prev) =>
+                      prev === booking.id ? null : booking.id,
                     );
                   }}
                   className="inline-flex items-center gap-2 text-blue-600 font-medium hover:underline mt-2"
                 >
-                  <FaDownload /> Download PDF
+                  <FaDownload /> View Ticket in PDF
                 </button>
+
+                {showPdf && (
+                  <iframe
+                    src={`/api/user/ticket-pdf?id=${booking.id}`}
+                    className="w-full h-[500px] border mt-4 rounded"
+                    title={`Ticket PDF for ${booking.id}`}
+                  ></iframe>
+                )}
               </>
             ) : (
               <p className="italic text-gray-500">No ticket issued yet.</p>
