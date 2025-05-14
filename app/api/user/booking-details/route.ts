@@ -1,40 +1,26 @@
-/**
- * API Endpoint: POST /api/user/booking-details
- *
- * Description:
- * This API allows a logged-in user to book one or more seats for a specific bus route.
- * It accepts the route ID, bus ID, selected seats, and passenger details (name, phone, seat number), It then creates booking records linked to the user, updates seat statuses to "BOOKED", and associates the bookings with the correct seats.
- * If the user's authentication token is valid, their email is extracted from the token to identify them; otherwise, a fallback email is used.
- * The endpoint ensures that each seat booked is correctly tracked for the specific bus and route combination.
- */
+// API: /app/api/user/booking-details/route.ts
 
 import { prisma } from "@utils/prisma";
-import { decodeJwt } from "jose";
 
 export async function POST(req: Request) {
-  const body = await req.json();
-  console.log("Received body:", body);
-  const { routeId, busId, passengerDetails } = body;
-
   try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.get("Authorization");
-    const token = authHeader?.split(" ")[1];
+    const body = await req.json();
 
-    // Decode JWT using jose or fallback to dummy email
-    let email = "john.doe@example.com";
-    if (token) {
-      try {
-        const decoded = decodeJwt(token);
-        if (decoded?.email && typeof decoded.email === "string") {
-          email = decoded.email;
-        }
-      } catch (error) {
-        console.error("Failed to decode JWT:", error);
-        console.warn("Failed to decode JWT, using dummy email.");
-      }
-    }
+    const { routeId, busId, passengerDetails } = body as {
+      routeId: string;
+      busId: string;
+      passengerDetails: Array<{
+        seat: number;
+        name: string;
+        phone: string;
+        idNumber?: string; // optional field
+      }>;
+    };
 
+    // Use a hardcoded dummy email since auth is not yet implemented
+    const email = "john.doe@example.com";
+
+    // Get the user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -45,23 +31,24 @@ export async function POST(req: Request) {
       });
     }
 
-    const createdBookings: string[] = []; // Array to store created booking IDs
-    const createdBookingSeats: string[] = []; // Array to store created booking seat IDs
+    const createdBookings: string[] = [];
+    const createdBookingSeats: string[] = [];
 
     for (const detail of passengerDetails) {
-      // Creating the Booking in booking table
+      // Create booking
       const booking = await prisma.booking.create({
         data: {
           userId: user.id,
           routeId,
           passengerName: detail.name,
           passengerPhone: detail.phone,
-          passengerGender: "OTHER", // Update if needed
+          passengerGender: "OTHER", // Placeholder, can be updated
         },
       });
 
-      createdBookings.push(booking.id); // Add the booking ID to the array
+      createdBookings.push(booking.id);
 
+      // Find the seat by seat number and bus ID
       const seat = await prisma.seat.findFirst({
         where: { seatNumber: detail.seat, busId },
       });
@@ -70,23 +57,27 @@ export async function POST(req: Request) {
         throw new Error(`Seat ${detail.seat} not found for this bus`);
       }
 
-      const createdRouteSeat = await prisma.seat.findFirst({
-        where: { id: seat!.id, busId },
-      });
-
-      await prisma.routeSeat.create({
-        data: {
-          routeId: routeId,
-          seatId: createdRouteSeat!.id,
+      // Ensure a routeSeat exists for this route/seat/bus
+      await prisma.routeSeat.upsert({
+        where: {
+          routeId_seatId: {
+            routeId,
+            seatId: seat.id,
+          },
+        },
+        update: {}, // no update needed
+        create: {
+          routeId,
+          seatId: seat.id,
           status: "AVAILABLE",
         },
       });
 
-      // Find the route seat based on the seat ID and route ID
+      // Now fetch the routeSeat to update its status
       const routeSeat = await prisma.routeSeat.findFirst({
         where: {
-          seatId: seat!.id,
-          routeId: routeId,
+          routeId,
+          seatId: seat.id,
         },
       });
 
@@ -94,11 +85,13 @@ export async function POST(req: Request) {
         throw new Error(`Route seat not found for seat ${detail.seat}`);
       }
 
+      // Mark seat as BOOKED
       await prisma.routeSeat.update({
         where: { id: routeSeat.id },
         data: { status: "BOOKED" },
       });
 
+      // Create booking-seat link
       const bookingSeat = await prisma.bookingSeat.create({
         data: {
           bookingId: booking.id,
@@ -106,23 +99,29 @@ export async function POST(req: Request) {
         },
       });
 
-      createdBookingSeats.push(bookingSeat.id); // Add the booking seat ID to the array
+      createdBookingSeats.push(bookingSeat.id);
     }
 
     return new Response(
       JSON.stringify({
         message: "Booking successful",
-        bookingIds: createdBookings, // Return the booking IDs
-        bookingSeatIds: createdBookingSeats, // Return the booking seat IDs
+        bookingIds: createdBookings,
+        bookingSeatIds: createdBookingSeats,
       }),
       {
         status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
     );
   } catch (err) {
-    console.error(err);
+    console.error("Booking API Error:", err);
     return new Response(JSON.stringify({ message: "Internal Server Error" }), {
       status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   }
 }
