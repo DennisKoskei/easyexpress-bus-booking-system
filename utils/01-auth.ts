@@ -7,11 +7,10 @@ import {
   LoginFormSchema,
   SignupFormSchema,
 } from "@utils/definitions";
-import { createSession, deleteSession } from "@utils/02-stateless-session";
 import bcrypt from "bcrypt";
 
 export async function signup(
-  state: FormState,
+  _state: FormState,
   formData: FormData,
 ): Promise<FormState> {
   const validated = SignupFormSchema.safeParse({
@@ -45,7 +44,7 @@ export async function signup(
   try {
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         firstName,
         lastName,
@@ -58,7 +57,7 @@ export async function signup(
       },
     });
 
-    await createSession(user.id.toString());
+    // await createSession(user.id.toString());
 
     return { success: true };
   } catch (error) {
@@ -68,7 +67,7 @@ export async function signup(
 }
 
 export async function login(
-  state: FormState,
+  _state: FormState,
   formData: FormData,
 ): Promise<FormState> {
   const validated = LoginFormSchema.safeParse({
@@ -96,11 +95,11 @@ export async function login(
     return { message: "Invalid login credentials." };
   }
 
-  await createSession(user.id.toString());
+  // await createSession(user.id.toString());
 
   return { success: true };
 }
 
-export async function logout() {
-  await deleteSession();
-}
+// export async function logout() {
+//   await deleteSession();
+// }
