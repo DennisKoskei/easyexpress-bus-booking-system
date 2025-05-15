@@ -6,15 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 
 import { prisma } from "@utils/prisma";
-
-// Define a type for Prisma user (excluding sensitive fields)
-type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  //-NOTE: Add avatar field
-};
+import bcrypt from "bcrypt"; // ✅ use bcrypt, not bcryptjs
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -26,71 +18,82 @@ export const authConfig: NextAuthOptions = {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     }),
-
     CredentialsProvider({
-      name: "Sign in",
+      name: "Credentials",
       credentials: {
         email: {
           label: "Email",
           type: "email",
           placeholder: "example@example.com",
         },
-        password: { label: "Password", type: "password" },
+        password: {
+          label: "Password",
+          type: "password",
+        },
       },
-
-      async authorize(
-        credentials: Record<"email" | "password", string> | undefined,
-        req: { headers: Headers },
-      ): Promise<User | null> {
-        if (!credentials) {
-          console.log("❌ No credentials provided.");
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          console.log("❌ Missing credentials");
           return null;
         }
 
-        const { email, password } = credentials;
-
-        if (!email || !password) {
-          console.log("❌ Missing email or password.");
-          return null;
-        }
-
-        // Fetch user from DB
-        const dbUser = await prisma.user.findFirst({
-          where: { email },
+        const dbUser = await prisma.user.findUnique({
+          where: { email: credentials.email },
         });
 
-        if (!dbUser) {
-          console.log("❌ User not found.");
+        if (!dbUser || !dbUser.passwordHash) {
+          console.log("❌ User not found or password not set.");
           return null;
         }
 
-        console.log("✅ User found in DB:", dbUser);
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          dbUser.passwordHash,
+        );
 
-        // Verify password
-        if (dbUser.passwordHash !== password) {
-          console.log("❌ Incorrect password.");
+        if (!passwordMatch) {
+          console.log("❌ Invalid password");
           return null;
         }
 
-        // Remove sensitive info before returning
-        const {
-          age,
-          phone,
-          gender,
-          role,
-          createdAt,
-          passwordHash,
-          ...safeUser
-        } = dbUser;
-
-        console.log("🔹 Safe User Details:", safeUser);
-        return { ...safeUser, id: String(dbUser.id) } as User;
+        return {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: `${dbUser.firstName} ${dbUser.lastName}`,
+        };
       },
     }),
   ],
+
+  pages: {
+    signIn: "/login", // ✅ redirect for unauthorized users
+  },
+
+  session: {
+    strategy: "jwt", // ✅ required for middleware-compatible session
+  },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      // Add user ID to token on login
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Add token ID to session for use in client/server
+      if (token?.id && session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
+
+  secret: process.env.NEXTAUTH_SECRET, // ✅ ensure this is set
 };
 
-// ✅ SERVER-SIDE AUTH CHECK
+// ✅ Server-side session enforcement helper
 export async function loginIsRequiredServer() {
   const session = await getServerSession(authConfig);
   console.log("Session Data:", session);

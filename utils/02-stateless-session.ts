@@ -97,18 +97,33 @@ export async function updateSession() {
     return null;
   }
 
+  // Decrypt session cookie
   const payload = await decrypt(sessionCookie.value);
-  if (!payload?.userId) {
+  console.log("🔍 Decrypted Payload:", payload); // Debugging step
+
+  if (!payload || typeof payload !== "object" || !payload.userId) {
     console.warn("⚠️ Invalid session payload. Cannot update.");
     return null;
   }
 
+  // Ensure userId is a string or number
+  const userId: string | number = typeof payload.userId === "string" || typeof payload.userId === "number"
+    ? payload.userId
+    : "";
+
+  if (!userId) {
+    console.warn("⚠️ Invalid userId format. Cannot update session.");
+    return null;
+  }
+
+  // Update expiry date
   const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const newSession = await encrypt({
     userId,
     expiresAt: newExpiresAt,
   });
 
+  // Set the new session cookie
   cookieStore.set("session", newSession, {
     httpOnly: true,
     secure: true,

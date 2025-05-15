@@ -1,107 +1,154 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { getSession } from "next-auth/react"; // Use client-side session retrieval
+import React, { useState } from "react";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { signup, login } from "@utils/01-auth";
+import { FormState } from "@utils/definitions";
 
 export default function LoginPage() {
-  const [isSignUp, setIsSignUp] = useState(false);
-  const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
 
-  useEffect(() => {
-    async function checkSession() {
-      const session = await getSession();
-      console.log("Session: new", session);
-      if (session) router.push("/");
-    }
-    checkSession();
-  }, [router]); // Run effect when router changes
+  const [loginState, loginAction] = useActionState(login, {
+    errors: {},
+  } satisfies FormState);
+
+  const [signupState, signupAction] = useActionState(signup, {
+    errors: {},
+  } satisfies FormState);
+
+  const toggleMode = () => setIsLogin((prev) => !prev);
+
+  const currentAction = isLogin ? loginAction : signupAction;
+  const currentErrors = isLogin ? loginState?.errors : signupState?.errors;
+  const currentMessage = isLogin ? loginState?.message : signupState?.message;
 
   return (
-    <div className="h-screen flex items-center justify-center bg-slate-300">
-      <div className="relative w-3/4 h-3/4 flex shadow-xl rounded-3xl overflow-hidden">
-        {/* Left Section (Info) */}
-        <div className="w-1/2 bg-blue-600 text-white p-10 flex flex-col justify-center items-center">
-          <h1 className="text-4xl font-bold">SwiftXpress</h1>
-          <p className="text-center mt-4">
-            The fastest and most reliable way to book your trips online. Join us
-            now!
-          </p>
-          <button
-            className="mt-6 px-6 py-2 bg-white text-blue-600 font-semibold rounded-lg shadow-md"
-            onClick={() => setIsSignUp(!isSignUp)}
-          >
-            {isSignUp
-              ? "Already have an account? Log in"
-              : "Don't have an account? Sign up"}
-          </button>
-        </div>
+    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
+      <h1 className="text-2xl font-semibold text-center mb-4">
+        {isLogin ? "Login" : "Sign Up"}
+      </h1>
 
-        {/* Right Section (Form) */}
-        <div
-          className={`w-1/2 p-10 flex flex-col justify-center transition-transform duration-500`}
+      <form action={currentAction} className="space-y-4">
+        {!isLogin && (
+          <>
+            <TextField
+              label="First Name"
+              name="firstName"
+              error={currentErrors?.firstName}
+            />
+            <TextField
+              label="Last Name"
+              name="lastName"
+              error={currentErrors?.lastName}
+            />
+            <TextField
+              label="Phone"
+              name="phone"
+              error={currentErrors?.phone}
+            />
+            <div>
+              <label>Gender</label>
+              <select name="gender" className="w-full border px-3 py-2 rounded">
+                <option value="">Select Gender</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+              </select>
+              {currentErrors?.gender && (
+                <p className="text-red-500 text-sm">{currentErrors.gender}</p>
+              )}
+            </div>
+            <TextField
+              label="Age"
+              name="age"
+              type="number"
+              error={currentErrors?.age}
+            />
+          </>
+        )}
+
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          error={currentErrors?.email}
+        />
+        <TextField
+          label="Password"
+          name="password"
+          type="password"
+          error={currentErrors?.password}
+        />
+
+        {!isLogin && (
+          <TextField
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            error={currentErrors?.confirmPassword}
+          />
+        )}
+
+        <AuthButton label={isLogin ? "Login" : "Sign Up"} />
+
+        {currentMessage && (
+          <p className="text-sm text-center text-red-500 mt-2">
+            {currentMessage}
+          </p>
+        )}
+      </form>
+
+      <p className="text-sm text-center mt-4">
+        {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+        <button
+          onClick={toggleMode}
+          className="text-blue-500 hover:underline font-semibold"
         >
-          {!isSignUp ? (
-            <>
-              <h1 className="text-2xl font-semibold text-center">Login</h1>
-              <form className="flex flex-col gap-4 mt-6">
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="email"
-                  placeholder="Email"
-                />
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="password"
-                  placeholder="Password"
-                />
-                <button className="mt-4 bg-blue-600 text-white py-2 rounded-xl shadow-md">
-                  Log In
-                </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <h1 className="text-2xl font-semibold text-center">Sign Up</h1>
-              <form className="flex flex-col gap-4 mt-6">
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="text"
-                  placeholder="First Name"
-                />
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="text"
-                  placeholder="Last Name"
-                />
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="email"
-                  placeholder="Email"
-                />
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="text"
-                  placeholder="Phone Number"
-                />
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="password"
-                  placeholder="Password"
-                />
-                <input
-                  className="rounded-xl h-10 px-3 border"
-                  type="password"
-                  placeholder="Confirm Password"
-                />
-                <button className="mt-4 bg-blue-600 text-white py-2 rounded-xl shadow-md">
-                  Sign Up
-                </button>
-              </form>
-            </>
-          )}
-        </div>
-      </div>
+          {isLogin ? "Sign Up" : "Login"}
+        </button>
+      </p>
     </div>
+  );
+}
+
+function TextField({
+  label,
+  name,
+  type = "text",
+  error,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  error?: string | string[];
+}) {
+  return (
+    <div>
+      <label>{label}</label>
+      <input
+        name={name}
+        type={type}
+        className="w-full border px-3 py-2 rounded"
+      />
+      {error && (
+        <p className="text-red-500 text-sm">
+          {Array.isArray(error) ? error[0] : error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function AuthButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition disabled:opacity-50"
+    >
+      {pending ? "Processing..." : label}
+    </button>
   );
 }
