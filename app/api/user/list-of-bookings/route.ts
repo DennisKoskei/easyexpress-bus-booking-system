@@ -1,12 +1,21 @@
 // /app/api/user/list-of-bookings/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@utils/prisma"; // adjust path if needed
+import { NextResponse } from "next/server";
+import { prisma } from "@utils/prisma";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@utils/auth";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    // Placeholder user ID (replace with session logic in production)
-    const userId = "cm9lg7ztx0000xtj0w7gpc3xv";
-    console.log("Inside list-of-bookings API");
+    console.log("Inside list-of-bookings route");
+
+    const session = await getServerSession(authConfig);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    console.log("User ID from session:", userId);
 
     const bookings = await prisma.booking.findMany({
       where: { userId },
@@ -28,13 +37,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (bookings.length === 0) {
-      return NextResponse.json(
-        { message: "No bookings found" },
-        { status: 404 },
-      );
-    }
-    console.log("Bookings: --> ", bookings);
+    console.log("Bookings fetched: --> --> ", bookings);
 
     const formatted = bookings.map((b) => {
       const ticket = b.bookingSeats[0]?.ticket;
@@ -62,7 +65,7 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(formatted);
+    return NextResponse.json(formatted); // returns [] if no bookings found
   } catch (err) {
     console.error("Failed to fetch user bookings:", err);
     return NextResponse.json(

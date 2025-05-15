@@ -9,20 +9,21 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
-//import { getServerSession } from "next-auth";
-//import { authConfig } from "@utils/auth"; // Adjust the path as needed
+import { getServerSession } from "next-auth";
+import { authConfig } from "@utils/auth";
 
 // 🟢 GET: FETCH USER DETAILS BY ID
-export async function GET(req: Request) {
+export async function GET() {
   try {
     // Get user session
-    //if (!session?.user?.email) {
-    //  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    //}
+    const session = await getServerSession(authConfig);
 
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("id"); // Get user ID from query params
-    // const userId = searchParams.get("id"); // Get user ID from query params
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    console.log("User ID from session:", userId);
 
     if (!userId) {
       return NextResponse.json(

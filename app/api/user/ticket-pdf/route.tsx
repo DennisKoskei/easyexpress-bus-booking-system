@@ -9,6 +9,8 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@utils/auth";
 import { renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
 
@@ -260,8 +262,13 @@ const TicketPDF = ({
 };
 
 export async function GET(req: NextRequest) {
-  // Replace this with session logic when ready
-  const userId = "cm9lg7ztx0000xtj0w7gpc3xv";
+  const session = await getServerSession(authConfig);
+
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const userId = session.user.id;
   const id = req.nextUrl.searchParams.get("id");
 
   if (!id) {

@@ -22,13 +22,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   reloadFlag,
 }) => {
-  const userId = "cm9lg7ztx0000xtj0w7gpc3xv";
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`/api/user/profile?id=${userId}`);
+        const res = await fetch("/api/user/profile");
         if (!res.ok) throw new Error("Failed to fetch user profile");
 
         const data = await res.json();

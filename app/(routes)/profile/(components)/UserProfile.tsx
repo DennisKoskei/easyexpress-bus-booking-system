@@ -10,8 +10,6 @@ type UserProfileProps = {
 };
 
 const UserProfile: React.FC<UserProfileProps> = ({ setReloadFlag }) => {
-  const userId = "cm9lg7ztx0000xtj0w7gpc3xv";
-
   const [user, setUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<User | null>(null);
   const [editable, setEditable] = useState(false);
@@ -21,7 +19,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ setReloadFlag }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`/api/user/profile?id=${userId}`);
+        const res = await fetch("/api/user/profile");
         if (!res.ok) throw new Error("Failed to fetch user profile");
 
         const data = await res.json();
