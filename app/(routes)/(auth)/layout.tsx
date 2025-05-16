@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import BackButton from "@components/BackButton";
 
 export default function AuthLayout({
   children,
@@ -24,7 +25,9 @@ export default function AuthLayout({
 
       {/* Centered content */}
       <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
-        <div className="flex w-full max-w-5xl h-[650px] md:h-[600px] bg-white/95 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md">
+        <div className="relative flex w-full max-w-5xl h-[650px] md:h-[600px] bg-white/95 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-md">
+          {/* Back Button */}
+          <BackButton />
           {/* Left Section - only on desktop */}
           <div className="hidden md:flex w-1/2 flex-col items-center justify-center bg-gradient-to-br from-blue-700 to-blue-500 text-white p-8">
             <h2 className="text-3xl font-bold mb-4">Welcome to EasyExpress</h2>
