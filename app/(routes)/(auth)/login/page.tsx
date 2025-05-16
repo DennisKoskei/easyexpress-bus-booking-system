@@ -1,107 +1,47 @@
+// app/(auth)/login/page.tsx
+
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { handleAuthSubmit } from "@components/AuthHandler";
+import { TextField, AuthButton } from "@components/AuthComponents";
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
-  const toggleMode = () => {
-    setIsLogin((prev) => !prev);
-    setMessage(null);
-  };
-
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
-      <h1 className="text-2xl font-semibold text-center mb-4">
-        {isLogin ? "Login" : "Sign Up"}
+    <div className="w-full">
+      <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">
+        Welcome Back
       </h1>
+      <p className="text-sm text-center text-gray-500 mb-8">
+        Please enter your credentials to log in
+      </p>
 
       <form
-        onSubmit={(e) =>
-          handleAuthSubmit(e, isLogin ? "login" : "signup", setMessage)
-        }
-        className="space-y-4"
+        onSubmit={(e) => handleAuthSubmit(e, "login", setMessage)}
+        className="space-y-5"
       >
-        {!isLogin && (
-          <>
-            <TextField label="First Name" name="firstName" />
-            <TextField label="Last Name" name="lastName" />
-            <TextField label="Phone" name="phone" />
-            <div>
-              <label>Gender</label>
-              <select name="gender" className="w-full border px-3 py-2 rounded">
-                <option value="">Select Gender</option>
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-            <TextField label="Age" name="age" type="number" />
-          </>
-        )}
-
         <TextField label="Email" name="email" type="email" />
         <TextField label="Password" name="password" type="password" />
 
-        {!isLogin && (
-          <TextField
-            label="Confirm Password"
-            name="confirmPassword"
-            type="password"
-          />
-        )}
-
-        <AuthButton label={isLogin ? "Login" : "Sign Up"} />
+        <AuthButton label="Login" />
 
         {message && (
           <p className="text-sm text-center text-red-500 mt-2">{message}</p>
         )}
       </form>
 
-      <p className="text-sm text-center mt-4">
-        {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-        <button
-          onClick={toggleMode}
-          className="text-blue-500 hover:underline font-semibold"
+      <p className="text-sm text-center mt-6 text-gray-600">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/signup"
+          className="text-blue-600 hover:underline font-semibold"
         >
-          {isLogin ? "Sign Up" : "Login"}
-        </button>
+          Sign Up
+        </Link>
       </p>
     </div>
-  );
-}
-
-function TextField({
-  label,
-  name,
-  type = "text",
-}: {
-  label: string;
-  name: string;
-  type?: string;
-}) {
-  return (
-    <div>
-      <label>{label}</label>
-      <input
-        name={name}
-        type={type}
-        className="w-full border px-3 py-2 rounded"
-        required
-      />
-    </div>
-  );
-}
-
-function AuthButton({ label }: { label: string }) {
-  return (
-    <button
-      type="submit"
-      className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
-    >
-      {label}
-    </button>
   );
 }
