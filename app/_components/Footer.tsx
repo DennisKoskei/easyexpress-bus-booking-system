@@ -1,7 +1,10 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaXTwitter, FaGithub } from "react-icons/fa6";
+import { SOCIAL_LINKS } from "@constants/constants";
+import { STRINGS } from "@constants/strings";
 
 const Footer = () => {
   return (
@@ -9,32 +12,39 @@ const Footer = () => {
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-between pb-28 pt-10 border-b border-gray-700">
         {/* Company Info */}
-        <div className="md:w-1/2 space-x-5 flex flex-row">
-          <div className="md:w-1/3">
-            <Image
-              src="/Assets/easyexpress-bus-logo.png"
-              alt="EasyExpress Logo"
-              width={300}
-              height={100}
-            />
+        <div className="w-full flex flex-wrap sm:flex-nowrap sm:w-full md:w-1/2 space-x-0 sm:space-x-5 flex-row">
+          {/* Logo Section */}
+          <div className="w-1/2 sm:w-1/3 flex justify-center sm:justify-start mb-4 sm:mb-0">
+            <div className="w-24 h-24 md:w-36 md:h-36 relative">
+              <Image
+                src="/Assets/easyexpress-bus-logo.png"
+                alt="EasyExpress Logo"
+                width={300}
+                height={100}
+                className="h-auto w-auto max-w-full object-contain"
+              />
+            </div>
           </div>
-          <div className="md:w-3/4 space-y-3">
-            <h3 className="text-2xl font-bold text-blue-400">EasyExpress</h3>
+
+          {/* Text Section */}
+          <div className="w-1/2 sm:w-2/3 space-y-3 text-left">
+            <h3 className="text-2xl font-bold text-blue-400">
+              {" "}
+              {STRINGS.company.name}
+            </h3>
             <p className="text-gray-300 text-sm leading-relaxed">
-              EasyExpress is the world&apos;s largest online bus ticket booking
-              service trusted by over 5 million happy customers countrywide.
-              EasyExpress offers bus ticket booking through its website, iOS and
-              Android mobile apps for all major routes.
+              {" "}
+              {STRINGS.company.info}
             </p>
           </div>
         </div>
 
         {/* Quick Links */}
-        <div className="flex flex-wrap md:flex-nowrap gap-x-14 mt-6 md:mt-0 text-sm">
+        <div className="flex flex-wrap md:flex-nowrap gap-y-4 md:gap-y-0 gap-x-16 mt-6 md:mt-0 text-sm">
           <div>
-            <h2 className="text-lg font-semibold pb-2">Info</h2>
+            <h2 className="text-lg font-semibold pb-2"> Info </h2>
             <ul className="text-gray-400 space-y-1 ">
-              <li className="hover:text-blue-400 cursor-pointer">T&C</li>
+              <li className="hover:text-blue-400 cursor-pointer"> T & C </li>
               <li className="hover:text-blue-400 cursor-pointer">
                 Privacy Policy
               </li>
@@ -48,7 +58,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold pb-2">Explore</h2>
+            <h2 className="text-lg font-semibold pb-2"> Explore </h2>
             <ul className="text-gray-400 space-y-1">
               <li className="hover:text-blue-400 cursor-pointer">
                 Popular Routes
@@ -56,13 +66,13 @@ const Footer = () => {
               <li className="hover:text-blue-400 cursor-pointer">
                 Bus Operators
               </li>
-              <li className="hover:text-blue-400 cursor-pointer">Careers</li>
-              <li className="hover:text-blue-400 cursor-pointer">Blog</li>
+              <li className="hover:text-blue-400 cursor-pointer"> Careers </li>
+              <li className="hover:text-blue-400 cursor-pointer"> Blog </li>
             </ul>
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold pb-2">Legal</h2>
+            <h2 className="text-lg font-semibold pb-2"> Legal </h2>
             <ul className="text-gray-400 space-y-1">
               <li className="hover:text-blue-400 cursor-pointer">
                 Terms of Use
@@ -79,28 +89,61 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section */}
-      <div className="flex flex-col md:flex-row justify-between items-center pt-6">
-        <div className="flex flex-col md:flex-row gap-4">
-          <p className="text-gray-400 text-sm">
-            © 2025 EasyExpress-Coaches - All Rights Reserved.
+      <div className="flex flex-col md:flex-row text-center sm:text-left justify-between items-center pt-6">
+        <div className="flex flex-col md:flex-row md:gap-x-4 items-center md:items-start">
+          <p className="text-gray-400 text-sm flex flex-col md:flex-row items-center">
+            {STRINGS.copyright.year}
+            <span className="md:ml-2">{STRINGS.copyright.text}</span>
           </p>
-          <p className="text-gray-400 text-sm underline">
-            <a
-              href="https://github.com/DennisKoskei/easyexpress-bus-booking-system.git"
-              target="_blank"
-              rel="noopener noreferrer" // Important for security
-            >
-              View this Project on Github
-            </a>
-          </p>
+
+          <a
+            href={SOCIAL_LINKS.githubRepo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 flex items-center mt-2 md:mt-0 hover:text-blue-600 transition underline underline-offset-3 text-sm"
+          >
+            <FaGithub className="w-4 h-4 mr-1" />
+            View this Project on GitHub
+          </a>
         </div>
 
         {/* Social Icons */}
-        <div className="flex space-x-4 mt-4 md:mt-0">
-          <FaFacebook className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
-          <FaXTwitter className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
-          <FaLinkedin className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
-          <FaInstagram className="w-6 h-6 text-gray-400 hover:text-pink-500 transition" />
+        <div className="flex space-x-4 mt-10 md:mt-0">
+          <Link
+            href={SOCIAL_LINKS.github}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaGithub className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
+          </Link>
+          <Link
+            href={SOCIAL_LINKS.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaFacebook className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
+          </Link>
+          <Link
+            href={SOCIAL_LINKS.twitter}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaXTwitter className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
+          </Link>
+          <Link
+            href={SOCIAL_LINKS.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaLinkedin className="w-6 h-6 text-gray-400 hover:text-blue-500 transition" />
+          </Link>
+          <Link
+            href={SOCIAL_LINKS.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaInstagram className="w-6 h-6 text-gray-400 hover:text-pink-500 transition" />
+          </Link>
         </div>
       </div>
     </footer>

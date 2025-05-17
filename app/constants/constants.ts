@@ -1,3 +1,15 @@
+// @constants/constants
+
+export const SOCIAL_LINKS = {
+  github: "https://github.com/DennisKoskei/",
+  githubRepo:
+    "https://github.com/DennisKoskei/easyexpress-bus-booking-system.git",
+  facebook: "#",
+  twitter: "#",
+  linkedin: "#",
+  instagram: "#",
+};
+
 export const navLinks = [
   {
     id: 1,
