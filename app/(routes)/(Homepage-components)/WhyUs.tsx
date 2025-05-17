@@ -3,6 +3,8 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { FaStar, FaCheckCircle } from "react-icons/fa";
+import { STRINGS } from "@constants/strings";
 
 const WhyUs = () => {
   return (
@@ -21,7 +23,7 @@ const WhyUs = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Why Choose Us
+          {STRINGS.whyUs.title}
         </motion.h1>
 
         <motion.h2
@@ -30,7 +32,7 @@ const WhyUs = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          25+ Years of Reliable Bus Charter Service
+          {STRINGS.whyUs.subtitle}
         </motion.h2>
 
         <motion.p
@@ -39,9 +41,7 @@ const WhyUs = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          We provide a safe, efficient, and comfortable journey with top-quality
-          services. Our commitment to safety and customer satisfaction makes us
-          the best choice.
+          {STRINGS.whyUs.description}
         </motion.p>
 
         {/* Feature List */}
@@ -59,12 +59,7 @@ const WhyUs = () => {
           }}
         >
           <ul className="space-y-3">
-            {[
-              "Brilliant Customer Service",
-              "24/7 Online Support",
-              "Safety Guarantee",
-              "Experienced Drivers",
-            ].map((item, i) => (
+            {STRINGS.whyUs.featuresLeft.map((item, i) => (
               <motion.li
                 key={i}
                 variants={{
@@ -73,17 +68,14 @@ const WhyUs = () => {
                 }}
                 className="flex items-center gap-2"
               >
-                ✅ {item}
+                <FaCheckCircle className="text-blue-500 w-5 h-5" />
+                {item}
               </motion.li>
             ))}
           </ul>
+
           <ul className="space-y-3">
-            {[
-              "Comfortable & Modern Buses",
-              "Affordable Prices",
-              "Easy Online Booking",
-              "Eco-Friendly Travel",
-            ].map((item, i) => (
+            {STRINGS.whyUs.featuresRight.map((item, i) => (
               <motion.li
                 key={i}
                 variants={{
@@ -92,7 +84,8 @@ const WhyUs = () => {
                 }}
                 className="flex items-center gap-2"
               >
-                ✅ {item}
+                <FaCheckCircle className="text-blue-500 w-5 h-5" />
+                {item}
               </motion.li>
             ))}
           </ul>
@@ -109,20 +102,27 @@ const WhyUs = () => {
             href="/about"
             className="bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-300"
           >
-            Learn More
+            {STRINGS.whyUs.learnMore}
           </Link>
         </motion.div>
       </motion.div>
 
       {/* Right Section (Image) */}
       <motion.div
-        className="Right w-1/2 relative"
+        className="Right w-full md:w-1/2 relative"
         initial={{ opacity: 0, x: 50 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <motion.div className="relative justify-center rounded-3xl w-9/12 h-[450px] transition-transform duration-500 hover:scale-105">
+        <motion.div
+          className="
+          relative justify-center rounded-3xl 
+          w-[80%] h-[300px] 
+          sm:w-[80%] sm:h-[350px] 
+          md:w-9/12 md:h-[450px] 
+          transition-transform duration-500 hover:scale-105"
+        >
           {/* Big Image */}
           <Image
             src="/Assets/bus-image-big.png"
@@ -134,7 +134,15 @@ const WhyUs = () => {
 
           {/* Small Image */}
           <motion.div
-            className="absolute -right-1/3 inset-y-10 rounded-[15%] h-3/4 w-2/3 border-blue-100 border-l-8 border-y-8"
+            className="
+            absolute 
+            -right-[30%] 
+            inset-y-14 
+            h-[60%] w-[60%] 
+            sm:h-[70%] sm:w-[70%] 
+            md:h-3/4 md:w-2/3 
+            border-blue-100 border-l-8 border-y-8 
+            rounded-[10%] md:rounded-[15%]"
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -144,19 +152,34 @@ const WhyUs = () => {
               alt="Small Image"
               fill
               style={{ objectFit: "cover" }}
-              className="rounded-[15%]"
+              className="rounded-[5%] md:rounded-[15%]"
             />
           </motion.div>
 
           {/* Badge */}
           <motion.div
-            className="absolute bottom-2 left-2 font-extrabold flex-col rounded-2xl py-2 px-4 border-1 border-slate-400 bg-white shadow-md"
+            className="
+            absolute 
+            bottom-2 left-2
+            font-extrabold flex-col 
+            rounded-2xl 
+            py-2 px-4 
+            border border-slate-400 
+            bg-white shadow-md"
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <p className="text-center">25+ Years</p>
-            <p>⭐⭐⭐⭐⭐</p>
+            <p className="text-center text-sm md:font-md">
+              {STRINGS.whyUs.badgeYears}
+            </p>
+
+            {/* 5 Star Icons */}
+            <div className="flex justify-center mt-1 space-x-1 text-yellow-500">
+              {[...Array(5)].map((_, i) => (
+                <FaStar key={i} className="w-4 h-4 md:w-5 md:h-5" />
+              ))}
+            </div>
           </motion.div>
         </motion.div>
       </motion.div>

@@ -11,7 +11,7 @@ const cardVariant = {
 
 const PopularDestinations = () => {
   return (
-    <div className="Popular_Destinations px-20 py-14 bg-gray-100">
+    <div className="Popular_Destinations px-10 md:px-20 py-14 bg-gray-100">
       {/* Section Header */}
       <div className="pb-8">
         <h1 className="text-3xl font-bold text-gray-900">

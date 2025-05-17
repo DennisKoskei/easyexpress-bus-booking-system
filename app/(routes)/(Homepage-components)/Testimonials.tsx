@@ -2,7 +2,9 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { testimonials } from "@/app/constants/constants";
+import { FaStar } from "react-icons/fa";
+import { testimonials } from "@constants/constants";
+import { STRINGS } from "@constants/strings";
 
 const Testimonials = () => {
   const testimonialVariant = {
@@ -11,7 +13,7 @@ const Testimonials = () => {
   };
 
   return (
-    <div className="Client_Testimonials relative px-20 pt-10 pb-20 bg-gray-100">
+    <div className="Client_Testimonials relative px-10 md:px-20 pt-10 pb-20 bg-gray-100">
       {/* Title Section */}
       <motion.div
         className="flex flex-col relative justify-center items-center"
@@ -20,12 +22,11 @@ const Testimonials = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="p-4 font-semibold text-3xl text-blue-600">
-          What Our Clients Say...
+        <h1 className="p-4 font-semibold text-center text-3xl text-blue-600">
+          {STRINGS.testimonials.heading}
         </h1>
-        <p className="w-3/6 text-center mb-7 text-gray-600">
-          Hear from our satisfied customers who have experienced the comfort and
-          reliability of EasyExpress firsthand.
+        <p className="w-full md:w-3/6 text-center mb-7 text-gray-600">
+          {STRINGS.testimonials.subtext}
         </p>
       </motion.div>
 
@@ -48,14 +49,19 @@ const Testimonials = () => {
               </div>
               <div className="flex flex-col">
                 <h3 className="font-semibold">{testimonial.name}</h3>
-                <div className="text-yellow-400 text-xs">⭐⭐⭐⭐⭐</div>
+                {/* 5 Star Icons */}
+                <div className="flex items-center space-x-1 text-yellow-400 text-xs">
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} className="w-4 h-4" />
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Logo Section (Full Width) */}
+      {/* Logo Section */}
       <motion.div
         className="bg-black absolute -inset-x-0 h-28 -mt-6 w-full mx-auto flex gap-12 items-center justify-around text-white font-bold text-lg pt-4"
         initial={{ opacity: 0, y: 30 }}
@@ -63,10 +69,11 @@ const Testimonials = () => {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.5 }}
       >
-        <p className="text-gray-300">LOGO</p>
-        <p className="text-gray-300">LOGO</p>
-        <p className="text-gray-300">LOGO</p>
-        <p className="text-gray-300">LOGO</p>
+        {STRINGS.testimonials.logos.map((logo, idx) => (
+          <p key={idx} className="text-gray-300">
+            {logo}
+          </p>
+        ))}
       </motion.div>
     </div>
   );
