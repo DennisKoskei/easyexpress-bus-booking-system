@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
+import { signOut } from "next-auth/react";
 import Dashboard from "./(components)/Dashboard";
 import BookingsContent from "./(components)/BookingsContent";
 import RoutesContent from "./(components)/RoutesContent";
@@ -82,7 +83,10 @@ const AdminPage = () => {
             >
               <FaDollarSign /> Revenue
             </li>
-            <li className="flex items-center gap-3 p-2 bg-red-500 rounded-lg cursor-pointer hover:bg-red-400">
+            <li
+              className="flex items-center gap-3 p-2 bg-red-500 rounded-lg cursor-pointer hover:bg-red-400"
+              onClick={() => signOut({ callbackUrl: "/" })}
+            >
               <FaSignOutAlt /> Logout
             </li>
           </ul>
@@ -94,7 +98,10 @@ const AdminPage = () => {
         {/* Header */}
         <header className="bg-white shadow-lg p-6 rounded-lg flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-700">Admin Dashboard</h1>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            onClick={() => signOut({ callbackUrl: "/" })}
+          >
             Logout
           </button>
         </header>

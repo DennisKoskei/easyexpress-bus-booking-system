@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 import { User } from "@/types/user";
 import {
   FaTicketAlt,
@@ -43,7 +44,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
 
     fetchUser();
-  }, [reloadFlag]); // Will Refresh when Flag changes.
+  }, [reloadFlag]);
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/" });
+  };
 
   return (
     <aside className="w-1/6 bg-slate-900 text-white p-6">
@@ -101,7 +106,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <FaHeadset /> Support
           </li>
-          <li className="flex items-center gap-3 p-2 bg-red-500 rounded-lg cursor-pointer hover:bg-red-400">
+          <li
+            className="flex items-center gap-3 p-2 bg-red-500 rounded-lg cursor-pointer hover:bg-red-400"
+            onClick={handleLogout} // <-- Call logout
+          >
             <FaSignOutAlt /> Logout
           </li>
         </ul>
