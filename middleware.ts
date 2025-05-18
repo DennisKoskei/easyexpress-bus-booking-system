@@ -28,6 +28,5 @@ export const config = {
     "/admin/:path*",
     "/payment/:path*",
     "/receipt/:path*",
-    "/search-results/:path*",
   ],
 };

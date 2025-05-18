@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { formatDate, formatTime } from "@utils/dateUtils"; // Adjust path as needed
 import { BusList } from "@/types/bus"; // Adjust path as needed
+import { formatAmount } from "@utils/amountUtil";
 
 const SearchResultsPage = () => {
   const searchParams = useSearchParams();
@@ -57,26 +58,25 @@ const SearchResultsPage = () => {
   };
 
   return (
-    <div className="bg-slate-50 mx-auto px-8 py-24">
+    <div className="bg-slate-50 mx-auto px-4 sm:px-8 md:px-20 py-24">
       {/* Search Summary */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold text-blue-700">Available Buses</h1>
         <p className="text-gray-600 mt-2">
-          Showing results for:{" "}
+          Showing results for: <br className="block md:hidden" />
           <span className="font-semibold text-blue-500">
             {departure} → {destination}
           </span>
-          {"  "} on
-          {"  "}
+          {" on "}
           <span className="font-semibold text-blue-500">
             {formatDate(date)}
           </span>
         </p>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col-reverse md:flex-row gap-6">
         {/* Sidebar */}
-        <div className="w-1/4 bg-white shadow-lg rounded-lg p-4">
+        <div className="w-full md:w-1/4 flex-end bg-white shadow-lg rounded-lg p-4">
           <h2 className="text-lg font-semibold text-gray-800 text-center mb-4">
             Popular Destinations
           </h2>
@@ -92,71 +92,89 @@ const SearchResultsPage = () => {
         </div>
 
         {/* Search Results */}
-        <div className="w-3/4">
+        <div className="w-full md:w-3/4">
           {loading ? (
             <div className="text-center text-gray-600">Loading buses...</div>
           ) : (
             buses.map((bus) => (
               <div
                 key={bus.routeId}
-                className="bg-white shadow-xl rounded-lg p-4 mb-4"
+                className="bg-white shadow-xl rounded-lg p-3 md:p-4 mb-4"
               >
-                <h2 className="text-lg font-bold text-blue-700">
-                  {bus.departure} → {bus.destination}
-                </h2>
-                <div className="flex flex-row gap-4 mt-3">
-                  <div className="flex flex-col">
-                    <div className="h-32 w-32  relative bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                <div className="flex justify-between">
+                  <h2 className="text-lg font-bold text-blue-700">
+                    {bus.departure} → {bus.destination}
+                  </h2>
+                  <div className="flex sm:hidden items-center">
+                    <p className="text-gray-600 text-sm md:text-base mr-2">
+                      Seats:
+                    </p>
+                    <p className="text-base md:text-xl font-bold  text-green-600">
+                      {bus.totalSeats}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-row gap-4 mt-0.5 md:mt-3">
+                  <div className="flex flex-col md:h-full">
+                    <div className="h-20 md:h-28 w-20 md:w-28 relative bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
                       <Image
                         // src={`/images/buses/${bus.plateNumber}.jpg`}
                         src={`/Assets/bus-image-small.png`}
                         alt={bus.busId}
                         fill
                         style={{ objectFit: "cover" }}
-                        className="absolute rounded-2xl"
+                        className="absolute rounded-xl"
                       />
                     </div>
-                    <p className="font-semibold text-sm pt-1">
-                      {bus.plateNumber}
+                    <p className="hidden md:flex italic text-xs text-gray-500 pt-1">
+                      Plate: {bus.plateNumber}
                     </p>
                   </div>
                   <div className="flex flex-col w-3/4">
-                    <div className="grid grid-cols-4 gap-4">
-                      <div>
-                        <p className="text-gray-600">From:</p>
-                        <p className="font-semibold">{bus.departure}</p>
+                    <div className="grid grid-cols-1 text-gray-600 md:grid-cols-4 text-sm md:text-base gap-y-0 gap-x-0 md:gap-x-4 md:gap-y-4">
+                      <div className="hidden md:flex md:flex-col items-start justify-center">
+                        <p>From: </p>
+                        <p className="font-bold">{bus.departure}</p>
                       </div>
-                      <div>
-                        <p className="text-gray-600">To:</p>
-                        <p className="font-semibold">{bus.destination}</p>
+                      <div className="hidden md:flex md:flex-col items-start justify-center">
+                        <p>To:</p>
+                        <p className="font-bold">{bus.destination}</p>
                       </div>
-                      <div>
-                        <p className="text-gray-600">Date:</p>
-                        <p className="font-semibold">{formatDate(bus.date)}</p>
+                      <div className="flex sm:flex-col ">
+                        <p className="mr-1.5">Date:</p>
+                        <p className="font-bold">{formatDate(bus.date)}</p>
                       </div>
-                      <div>
-                        <p className="text-gray-600">Time:</p>
-                        <p className="font-semibold">{formatTime(bus.time)}</p>
+                      <div className="flex sm:flex-col">
+                        <p className="mr-1.5">Time:</p>
+                        <p className="font-bold">{formatTime(bus.time)}</p>
                       </div>
                     </div>
-                    <div className="grid grid-cols-4 gap-4 mt-4">
-                      <div>
-                        <p className="text-gray-600">Available Seats:</p>
-                        <p className="text-xl font-bold text-green-600">
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-0 md:gap-x-4 mt-1 sm:mt-2">
+                      <div className="hidden md:flex md:flex-col">
+                        <p className="text-gray-600 text-sm md:text-base">
+                          Available Seats:
+                        </p>
+                        <p className="text-base md:text-xl font-bold  text-green-600">
                           {bus.totalSeats}
                         </p>
                       </div>
-                      <div>
-                        <p className="text-gray-600">Price:</p>
-                        <p className="text-xl font-bold text-blue-600">
-                          {bus.amount} /=
+                      <div className="flex sm:flex-col items-baseline">
+                        <p className="text-gray-600 text-sm md:text-base mr-1.5">
+                          Price:
+                        </p>
+                        <p className="text-lg md:text-xl font-bold text-blue-600 -mr-1.5">
+                          {formatAmount(bus.amount)} /=
                         </p>
                       </div>
-                      <div className="flex items-center justify-center"></div>
-                      <div className="flex justify-end">
+
+                      <div className="hidden md:flex items-center justify-center"></div>
+
+                      <div className="flex w-full h-full items-start justify-end sm:justify-start -mt-2 sm:mt-0">
                         <button
                           onClick={() => handleBooking(bus.busId, bus.routeId)}
-                          className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-700 transition-all"
+                          className="bg-gradient-to-r from-blue-400 to-blue-700 text-white font-semibold text-sm sm:text-lg px-3 sm:px-4 py-2.5 sm:py-1.5 rounded-md shadow hover:shadow-lg hover:scale-110 transition-all duration-300"
                         >
                           Book Seat
                         </button>
