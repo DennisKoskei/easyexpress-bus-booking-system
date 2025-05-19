@@ -6,11 +6,14 @@ export interface User {
   lastName: string;
   email: string;
   phone: string;
+  avatarUrl: string;
   gender: "MALE" | "FEMALE";
   age: number;
   role: "PASSENGER" | "ADMIN";
   createdAt: string;
 }
+
+export type PublicUser = Pick<User, "firstName" | "lastName" | "email" | "avatarUrl">;
 
 export type EditableUserKeys = keyof Omit<
   User,
@@ -23,6 +26,7 @@ export interface NewUser {
   lastName?: string;
   email?: string;
   phone?: string;
+  avatarUrl: string;
   passwordHash?: string;
   gender?: "MALE" | "FEMALE";
   age?: number;

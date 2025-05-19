@@ -55,6 +55,7 @@ model User {
   gender       Gender
   age          Int
   role         Role      @default(PASSENGER)
+  avatarUrl  String?
   bookings     Booking[]
   tickets      Ticket[]
   createdAt    DateTime  @default(now())
@@ -75,6 +76,7 @@ model Driver {
   id         String @id @default(cuid())
   firstName  String
   lastName   String
+  avatarUrl  String?
   phone      String @unique
   licenseNo  String @unique
   experience Int
