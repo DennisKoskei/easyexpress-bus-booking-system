@@ -1,3 +1,4 @@
+// @utils/auth.ts
 import { NextAuthOptions, getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -6,7 +7,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 
 import { prisma } from "@utils/prisma";
-import bcrypt from "bcrypt"; // ✅ use bcrypt, not bcryptjs
+import bcrypt from "bcrypt";
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -66,37 +67,80 @@ export const authConfig: NextAuthOptions = {
   ],
 
   pages: {
-    signIn: "/login", // ✅ redirect for unauthorized users
+    signIn: "/login",
   },
 
   session: {
-    strategy: "jwt", // ✅ required for middleware-compatible session
+    strategy: "jwt",
   },
 
   callbacks: {
-    async jwt({ token, user }) {
-      // Add user ID to token on login
+    async jwt({ token, user, account, profile }) {
+      // Handle social login user creation
+      if (
+        account &&
+        profile &&
+        (account.provider === "google" || account.provider === "github")
+      ) {
+        const email = profile.email as string;
+        let existingUser = await prisma.user.findUnique({ where: { email } });
+
+        if (!existingUser) {
+          // Fallback values for required fields
+          const name = profile.name || "Unnamed User";
+          const [firstName, lastName] = name.split(" ") || ["User", "Name"];
+          const phone = undefined ; // Default placeholder phone
+          const passwordHash = await bcrypt.hash(
+            Math.random().toString(36).slice(-8), // dummy random password
+            10,
+          );
+
+          existingUser = await prisma.user.create({
+            data: {
+              firstName,
+              lastName: lastName || "User",
+              email,
+              phone,
+              passwordHash,
+              gender: "OTHER", // Assuming enum Gender has OTHER
+              age: 0, // default/fake value
+              avatarUrl: profile.image || null,
+            },
+          });
+        }
+
+        token.id = existingUser.id;
+      }
+
+      // For credentials login
       if (user) {
         token.id = user.id;
       }
+
       return token;
     },
+
     async session({ session, token }) {
-      // Add token ID to session for use in client/server
       if (token?.id && session.user) {
         session.user.id = token.id as string;
       }
       return session;
     },
+
+    async redirect({ url, baseUrl }) {
+      // Allow returning to the previous page via callbackUrl, fallback to homepage
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
   },
 
-  secret: process.env.NEXTAUTH_SECRET, // ✅ ensure this is set
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
-// ✅ Server-side session enforcement helper
+// Server-side session enforcement
 export async function loginIsRequiredServer() {
   const session = await getServerSession(authConfig);
-  console.log("Session Data:", session);
   if (!session) return redirect("/login");
   return session;
 }

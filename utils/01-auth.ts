@@ -32,7 +32,6 @@ export async function signup(
 
   const { firstName, lastName, phone, gender, age, email, password } =
     validated.data;
-
   const userExists = await prisma.user.findUnique({ where: { email } });
 
   if (userExists) {
@@ -57,8 +56,6 @@ export async function signup(
       },
     });
 
-    // await createSession(user.id.toString());
-
     return { success: true };
   } catch (error) {
     console.error("Signup Error:", error);
@@ -82,7 +79,6 @@ export async function login(
   }
 
   const { email, password } = validated.data;
-
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user || !user.passwordHash) {
@@ -94,12 +90,5 @@ export async function login(
   if (!isMatch) {
     return { message: "Invalid login credentials." };
   }
-
-  // await createSession(user.id.toString());
-
   return { success: true };
 }
-
-// export async function logout() {
-//   await deleteSession();
-// }

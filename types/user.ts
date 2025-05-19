@@ -5,7 +5,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  phone: string;
+  phone?: string;
   avatarUrl: string;
   gender: "MALE" | "FEMALE";
   age: number;
@@ -13,7 +13,10 @@ export interface User {
   createdAt: string;
 }
 
-export type PublicUser = Pick<User, "firstName" | "lastName" | "email" | "avatarUrl">;
+export type PublicUser = Pick<
+  User,
+  "firstName" | "lastName" | "email" | "avatarUrl"
+>;
 
 export type EditableUserKeys = keyof Omit<
   User,

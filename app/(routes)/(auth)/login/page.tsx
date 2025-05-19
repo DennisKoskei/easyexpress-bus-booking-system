@@ -96,7 +96,6 @@ export default function LoginPage() {
             onClick={() => signIn("github")}
             aria-label="Login with GitHub"
             className="m-3  rounded-full"
-            //className="m-3 p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
           >
             <FaGithub size={25} />
           </button>
@@ -105,7 +104,6 @@ export default function LoginPage() {
             onClick={() => signIn("google")}
             aria-label="Login with Google"
             className="m-3  rounded-full"
-            //className="m-3 p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
           >
             <FcGoogle size={25} />
           </button>
@@ -115,7 +113,6 @@ export default function LoginPage() {
             aria-label="Login with Apple"
             disabled
             className="m-3 rounded-full cursor-not-allowed"
-            // className="m-3 p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
           >
             <FaApple size={25} />
           </button>
@@ -125,7 +122,6 @@ export default function LoginPage() {
             aria-label="Login with Facebook"
             disabled
             className="m-3 rounded-full cursor-not-allowed "
-            // className="m-3 p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition"
           >
             <FaFacebook size={25} />
           </button>

@@ -50,7 +50,7 @@ model User {
   firstName    String
   lastName     String
   email        String    @unique
-  phone        String    @unique
+  phone        String?    @unique
   passwordHash String
   gender       Gender
   age          Int
@@ -77,8 +77,8 @@ model Driver {
   firstName  String
   lastName   String
   avatarUrl  String?
-  phone      String @unique
-  licenseNo  String @unique
+  phone      String? @unique
+  licenseNo  String  @unique
   experience Int
   bus        Bus?
 }
