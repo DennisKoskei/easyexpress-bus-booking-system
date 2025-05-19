@@ -9,7 +9,7 @@ const BackButton = () => {
   return (
     <div>
       <button
-        onClick={() => router.back()}
+        onClick={() => router.push("/")}
         className="absolute top-4 right-4 z-20 group"
       >
         <div

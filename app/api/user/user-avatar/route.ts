@@ -1,8 +1,14 @@
+/**
+ * API Route: /api/user/user-avatar
+ * Description: API Route to fetch user avatar and also update user avatar
+ */
+
 import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@utils/auth"; // Adjust the path as needed
 
+// GET: FETCH USER AVATAR
 export async function GET() {
   try {
     // Get user session
@@ -14,14 +20,14 @@ export async function GET() {
     // Fetch the user's avatar from the database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      select: { avatar: true }, // Fetch only the avatar field
+      select: { avatarUrl: true }, // Fetch only the avatar field
     });
 
-    if (!user || !user.avatar) {
+    if (!user || !user.avatarUrl) {
       return NextResponse.json({ error: "Avatar not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ avatarUrl: user.avatar });
+    return NextResponse.json({ avatarUrl: user.avatarUrl });
   } catch (error) {
     console.error("API Error fetching user avatar:", error);
     return NextResponse.json(

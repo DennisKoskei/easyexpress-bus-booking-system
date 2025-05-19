@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { User } from "@/types/user";
+import { PublicUser } from "@/types/user";
+import { AVATAR_URL } from "@constants/constants";
 import {
   FaTicketAlt,
   FaHeadset,
@@ -23,7 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   reloadFlag,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<PublicUser | null>(null);
+  const dafaultAvatarUrl = AVATAR_URL;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -36,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          avatarUrl: data.avatarUrl || "/Assets/profile-pic.png",
+          avatarUrl: data.avatarUrl,
         });
       } catch (err) {
         console.error("Fetch error:", err);
@@ -56,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="relative group">
           <Image
             className="rounded-full border-2 border-white object-cover"
-            src={user?.avatarUrl || "/Assets/profile-pic.png"}
+            src={user?.avatarUrl ?? dafaultAvatarUrl}
             width={100}
             height={100}
             alt="Profile Picture"

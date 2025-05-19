@@ -1,23 +1,27 @@
-//@type {import('next').NextConfig}
+// @type {import('next').NextConfig}
 import type { NextConfig } from "next";
 
-const NextConfig = {
+const NextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https", // Or 'http' if needed
+        protocol: "https",
         hostname: "avatars.githubusercontent.com",
-        port: "", // Leave empty if default port
-        pathname: "/**", // Allow all paths under this hostname
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "lh3.googleusercontent.com", // Google profile images
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc", // Added pravatar
         pathname: "/**",
       },
     ],
   },
-  // devIndicators: false,
 };
 
 module.exports = NextConfig;

@@ -10,6 +10,8 @@ export const SOCIAL_LINKS = {
   instagram: "#",
 };
 
+export const AVATAR_URL = "https://i.pravatar.cc/150?u=fake@pravatar.com";
+
 export const navLinks = [
   {
     id: 1,

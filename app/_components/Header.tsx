@@ -8,39 +8,38 @@ import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-
-// Function to fetch user avatar from API
-const fetchUserAvatar = async (userId: string) => {
-  try {
-    const response = await fetch(`/api/user/avatar?userId=${userId}`);
-    if (!response.ok) throw new Error("Failed to fetch avatar");
-    const data = await response.json();
-
-    const { avatarUrl } = data;
-    const validUrlPattern = "https://i.pravatar.cc/150?u=fake@pravatar.com";
-    return avatarUrl ?? validUrlPattern;
-  } catch (error) {
-    console.error("Error fetching avatar:", error);
-    return null;
-  }
-};
+import { AVATAR_URL } from "@constants/constants";
 
 const Header = () => {
   const { data: session } = useSession(); // NextAuth session
   const pathname = usePathname();
   const [avatar, setAvatar] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const dafaultAvatarUrl = AVATAR_URL;
 
   // Define routes where we want the transparent-to-colored scroll effect
   const scrollHeaderRoutes = ["/", "/login", "/about"];
   const shouldScrollEffect = scrollHeaderRoutes.includes(pathname);
   const [isScrolled, setIsScrolled] = useState(() =>
-    shouldScrollEffect ? false : true
+    shouldScrollEffect ? false : true,
   );
 
   useEffect(() => {
+    // Fetch user avatar only if session exists
     if (session?.user?.id) {
-      fetchUserAvatar(session.user.id).then(setAvatar);
+      const fetchAvatar = async () => {
+        try {
+          const response = await fetch("/api/user/profile");
+          if (!response.ok) throw new Error("Failed to fetch avatar");
+          const data = await response.json();
+          const { avatarUrl } = data;
+          setAvatar(avatarUrl ?? dafaultAvatarUrl);
+        } catch (error) {
+          console.error("Error fetching avatar:", error);
+          setAvatar(null);
+        }
+      };
+      fetchAvatar();
     }
 
     if (shouldScrollEffect) {
@@ -54,7 +53,7 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-blue-800 shadow-md" : "bg-transparent"} ${!shouldScrollEffect ? "bg-blue-900 shadow-md" : ""}`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-16 sm:h-20">
         {/* LOGO */}
         <div className="flex w-1/2 items-center">
           <Link href="/" className="flex items-center space-x-3">
@@ -115,7 +114,7 @@ const Header = () => {
                     src={avatar}
                     width={40}
                     height={40}
-                    className="w-10 h-10 rounded-full border-2 border-white"
+                    className="w-5 h-5 sm:w-10 sm:h-10 rounded-full border-0.5 border-white"
                     alt="User Avatar"
                   />
                 ) : (

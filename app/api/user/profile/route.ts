@@ -43,6 +43,7 @@ export async function GET() {
         gender: true,
         age: true,
         role: true,
+        avatarUrl: true,
         createdAt: true,
       },
     });
