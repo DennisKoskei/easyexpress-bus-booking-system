@@ -76,6 +76,10 @@ model Driver {
   id         String @id @default(cuid())
   firstName  String
   lastName   String
+  email      String?   @unique
+  passwordHash String?
+  gender     Gender?
+  age        Int?
   avatarUrl  String?
   phone      String? @unique
   licenseNo  String  @unique
