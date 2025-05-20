@@ -13,6 +13,7 @@ import { getServerSession } from "next-auth";
 import { authConfig } from "@utils/auth";
 import { renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
+import { STRINGS } from "@constants/strings";
 
 type BookingWithDetails = NonNullable<Awaited<ReturnType<typeof fetchBooking>>>;
 
@@ -183,9 +184,11 @@ const TicketPDF = ({
             <View style={styles.contactSection}>
               <Text style={styles.subHeading}>PASSENGER TICKET</Text>
               <View style={styles.rightHorizontalRow}>
-                <Text style={styles.contactItem}>Phone: +254 20-333-555</Text>
                 <Text style={styles.contactItem}>
-                  Email: support@easyexpress.com
+                  Phone: {STRINGS.customerSupport.phone}
+                </Text>
+                <Text style={styles.contactItem}>
+                  Email: {STRINGS.customerSupport.email}
                 </Text>
               </View>
             </View>

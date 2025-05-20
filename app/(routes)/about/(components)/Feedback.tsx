@@ -1,5 +1,6 @@
 import React from "react";
 import SubNewsletter from "./SubNewsletter";
+import { STRINGS } from "@constants/strings";
 
 const Feedback = () => {
   return (
@@ -45,11 +46,13 @@ const Feedback = () => {
         <div className="w-full flex flex-col items-end text-right">
           <h2 className="text-2xl text-gray-800 font-bold mb-4">Contact Us</h2>
           <div className="text-gray-800 font-medium">
-            <p className="mb-0 text-gray-800">Express House, Jogoo Road</p>
-            <p className="mb-2">Nairobi, Kenya</p>
-            <p className="mb-1"> +254 700 123 456</p>
-            <p className="mb-1"> support@easyexpress.com</p>
-            <p className="mb-3"> www.easyexpress.com</p>
+            <p className="mb-0 text-gray-800">
+              {STRINGS.customerSupport.physicalAddress}
+            </p>
+            <p className="mb-2">{STRINGS.customerSupport.location}</p>
+            <p className="mb-1"> {STRINGS.customerSupport.phone}</p>
+            <p className="mb-1"> {STRINGS.customerSupport.email}</p>
+            <p className="mb-3"> {STRINGS.customerSupport.website}</p>
           </div>
         </div>
         <SubNewsletter />

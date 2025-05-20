@@ -5,6 +5,7 @@ import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter, FaGithub } from "react-icons/fa6";
 import { SOCIAL_LINKS } from "@constants/constants";
 import { STRINGS } from "@constants/strings";
+import { Phone, Mail, MapPin } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -14,7 +15,7 @@ const Footer = () => {
         {/* Company Info */}
         <div className="w-full flex flex-wrap sm:flex-nowrap sm:w-full md:w-1/2 space-x-0 sm:space-x-5 flex-row">
           {/* Logo Section */}
-          <div className="w-1/2 sm:w-1/3 flex justify-center sm:justify-start mb-4 sm:mb-0">
+          <div className="w-1/2 flex flex-col sm:w-1/3 justify-start mb-4 sm:mb-0">
             <div className="w-24 h-24 md:w-36 md:h-36 relative">
               <Image
                 src="/Assets/easyexpress-bus-logo.png"
@@ -23,6 +24,30 @@ const Footer = () => {
                 height={100}
                 className="h-auto w-auto max-w-full object-contain"
               />
+            </div>
+            <div className="text-gray-500 mt-2 md:mt-5 flex flex-col mr-0 md:-mr-36 mb-0 md:-mb-12 pr-6 md:pr-0 pb-0 md:pb-4">
+              <div className="flex flex-row pb-1 md:pb-0 items-center">
+                <Phone className="w-4 h-4 mr-2  text-gray-700 group-hover:text-black" />
+                <p className="pb-1 md:text-sm text-[11px] ">
+                  {" "}
+                  {STRINGS.customerSupport.phone}
+                </p>
+              </div>
+              <div className="flex flex-row pb-1 md:pb-0 items-center">
+                <Mail className="w-4 h-4 mr-2 text-gray-700 group-hover:text-black" />
+                <p className="pb-1 md:text-sm text-[11px] ">
+                  {" "}
+                  {STRINGS.customerSupport.email}
+                </p>
+              </div>
+              <div className="flex flex-row pb-1 md:pb-0 items-start md:items-center">
+                <MapPin className="w-8 md:w-4 h-8 md:h-4 mr-2 text-gray-700 " />
+                <p className="pb-1 md:text-sm text-[11px] ">
+                  {STRINGS.customerSupport.physicalAddress}
+                  {", "}
+                  {STRINGS.customerSupport.location}
+                </p>
+              </div>
             </div>
           </div>
 

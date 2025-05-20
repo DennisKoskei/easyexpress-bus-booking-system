@@ -5,6 +5,13 @@ export const STRINGS = {
     name: "EasyExpress",
     info: `EasyExpress is the world’s largest online bus ticket booking service trusted by over 5 million happy customers countrywide. EasyExpress offers bus ticket booking through its website, iOS and Android mobile apps for all major routes.`,
   },
+  customerSupport: {
+    phone: "+254 200-233-333",
+    email: "support@easyexpress.com",
+    website: "www.easyexpress.com",
+    physicalAddress: "Express House, 123 EasyExpress St",
+    location: "Nairobi, Kenya",
+  },
   copyright: {
     year: `© 2025 EasyExpress Coaches is a registered trademark of EasyExpress Inc`,
     text: "All rights reserved.",
