@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
-import { routes } from "@/app/constants/constants";
+import { routes } from "@constants/constants";
 import { motion } from "framer-motion";
 
 const cardVariant = {

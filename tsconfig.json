@@ -25,7 +25,7 @@
       "@styles/*": ["./app/_styles/*"],
       "@utils/*": ["./utils/*"],
       "@/types/*": ["./types/*"],
-      "@constants/*": ["./app/constants/*"]
+      "@constants/*": ["./constants/*"]
     },
     "types": ["next-auth"]
   },

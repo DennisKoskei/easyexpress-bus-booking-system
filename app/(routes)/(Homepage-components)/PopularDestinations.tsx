@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { destinations } from "@/app/constants/constants";
+import { destinations } from "@constants/constants";
 import { motion } from "framer-motion";
 
 const cardVariant = {
