@@ -22,7 +22,7 @@
       "@/*": ["./*"],
       "@app/*": ["./app/(routes)/*"],
       "@components/*": ["./app/_components/*"],
-      "@styles/*": ["./app/_styles/*"],
+      "@styles/*": ["./styles/*"],
       "@utils/*": ["./utils/*"],
       "@/types/*": ["./types/*"],
       "@constants/*": ["./constants/*"]
