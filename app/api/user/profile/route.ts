@@ -22,7 +22,12 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userEmail = session.user.email;
+    const foundUser = await prisma.user.findUnique({
+      where: { email: userEmail },
+    });
+
+    const userId = foundUser?.id;
     console.log("User ID from session:", userId);
 
     if (!userId) {

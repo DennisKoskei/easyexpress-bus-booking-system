@@ -8,6 +8,7 @@ import GithubProvider from "next-auth/providers/github";
 
 import { prisma } from "@utils/prisma";
 import bcrypt from "bcrypt";
+import { GoogleProfile, GithubProfile } from "@/types/auth";
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -82,28 +83,36 @@ export const authConfig: NextAuthOptions = {
         profile &&
         (account.provider === "google" || account.provider === "github")
       ) {
-        const email = profile.email as string;
+        let email: string;
+        let name = "Unnamed_User Unnamed_User";
+        let avatarUrl: string | null = null;
+
+        if (account.provider === "google") {
+          const googleProfile = profile as GoogleProfile;
+          email = googleProfile.email;
+          name = googleProfile.name || "Unnamed User";
+          avatarUrl = googleProfile.picture || null;
+        } else {
+          const githubProfile = profile as GithubProfile;
+          email = githubProfile.email;
+          name = githubProfile.name || githubProfile.login || "Unnamed User";
+          avatarUrl = githubProfile.avatar_url || null;
+        }
+
         let existingUser = await prisma.user.findUnique({ where: { email } });
 
         if (!existingUser) {
-          // Fallback values for required fields
-          const name = profile.name || "Unnamed User";
           const [firstName, lastName] = name.split(" ") || ["User", "Name"];
-          const phone = undefined; // Default placeholder phone
-          const passwordHash = undefined;
-          const gender = undefined;
-          const age = undefined;
-          const avatarUrl = (profile as { picture?: string }).picture || null;
           existingUser = await prisma.user.create({
             data: {
               firstName,
               lastName: lastName || "User",
               email,
-              phone,
-              passwordHash,
-              gender,
-              age,
-              avatarUrl: avatarUrl,
+              phone: undefined,
+              passwordHash: undefined,
+              gender: undefined,
+              age: undefined,
+              avatarUrl,
             },
           });
         }
@@ -126,11 +135,9 @@ export const authConfig: NextAuthOptions = {
       return session;
     },
 
-    async redirect({ url, baseUrl }) {
-      // Allow returning to the previous page via callbackUrl, fallback to homepage
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+    async redirect() {
+      console.log("Redirecting...");
+      return "/";
     },
   },
 

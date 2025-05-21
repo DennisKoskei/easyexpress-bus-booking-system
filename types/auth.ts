@@ -8,3 +8,17 @@ export type SignupErrors = {
   password?: string[];
   confirmPassword?: string[];
 };
+
+// ✅ Custom OAuth profile types
+export type GoogleProfile = {
+  email: string;
+  name?: string;
+  picture?: string;
+};
+
+export type GithubProfile = {
+  email: string;
+  name?: string;
+  login: string;
+  avatar_url?: string;
+};
