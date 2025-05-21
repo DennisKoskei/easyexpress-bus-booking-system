@@ -51,9 +51,9 @@ model User {
   lastName     String
   email        String    @unique
   phone        String?    @unique
-  passwordHash String
-  gender       Gender
-  age          Int
+  passwordHash String?
+  gender       Gender?
+  age          Int?
   role         Role      @default(PASSENGER)
   avatarUrl  String?
   bookings     Booking[]
@@ -76,7 +76,7 @@ model Driver {
   id         String @id @default(cuid())
   firstName  String
   lastName   String
-  email      String?   @unique
+  email      String   @unique
   passwordHash String?
   gender     Gender?
   age        Int?

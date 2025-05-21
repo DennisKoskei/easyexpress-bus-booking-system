@@ -89,12 +89,11 @@ export const authConfig: NextAuthOptions = {
           // Fallback values for required fields
           const name = profile.name || "Unnamed User";
           const [firstName, lastName] = name.split(" ") || ["User", "Name"];
-          const phone = undefined ; // Default placeholder phone
-          const passwordHash = await bcrypt.hash(
-            Math.random().toString(36).slice(-8), // dummy random password
-            10,
-          );
-
+          const phone = undefined; // Default placeholder phone
+          const passwordHash = undefined;
+          const gender = undefined;
+          const age = undefined;
+          const avatarUrl = (profile as { picture?: string }).picture || null;
           existingUser = await prisma.user.create({
             data: {
               firstName,
@@ -102,9 +101,9 @@ export const authConfig: NextAuthOptions = {
               email,
               phone,
               passwordHash,
-              gender: "OTHER", // Assuming enum Gender has OTHER
-              age: 0, // default/fake value
-              avatarUrl: profile.image || null,
+              gender,
+              age,
+              avatarUrl: avatarUrl,
             },
           });
         }

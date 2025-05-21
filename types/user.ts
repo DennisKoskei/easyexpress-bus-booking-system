@@ -6,9 +6,10 @@ export interface User {
   lastName: string;
   email: string;
   phone?: string;
-  avatarUrl: string;
-  gender: "MALE" | "FEMALE";
-  age: number;
+  // passwordHash?: string;
+  avatarUrl?: string;
+  gender?: "MALE" | "FEMALE";
+  age?: number;
   role: "PASSENGER" | "ADMIN";
   createdAt: string;
 }
