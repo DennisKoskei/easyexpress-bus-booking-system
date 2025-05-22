@@ -120,8 +120,7 @@ export default function LoginPage() {
           <button
             onClick={() => signIn("facebook")}
             aria-label="Login with Facebook"
-            disabled
-            className="m-3 rounded-full cursor-not-allowed "
+            className="m-3 rounded-full"
           >
             <FaFacebook size={25} />
           </button>

@@ -1,3 +1,5 @@
+// @/types/auth.ts
+
 export type SignupErrors = {
   firstName?: string[];
   lastName?: string[];
@@ -22,3 +24,14 @@ export type GithubProfile = {
   login: string;
   avatar_url?: string;
 };
+
+export interface FacebookProfile {
+  id: string;
+  name: string;
+  email: string;
+  picture?: {
+    data?: {
+      url?: string;
+    };
+  };
+}

@@ -5,10 +5,11 @@ import { redirect } from "next/navigation";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
+import FacebookProvider from "next-auth/providers/facebook";
 
 import { prisma } from "@utils/prisma";
 import bcrypt from "bcrypt";
-import { GoogleProfile, GithubProfile } from "@/types/auth";
+import { GoogleProfile, GithubProfile, FacebookProfile } from "@/types/auth";
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -19,6 +20,10 @@ export const authConfig: NextAuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID as string,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -81,28 +86,45 @@ export const authConfig: NextAuthOptions = {
       if (
         account &&
         profile &&
-        (account.provider === "google" || account.provider === "github")
+        ["google", "github", "facebook"].includes(account.provider)
       ) {
-        let email: string;
-        let name = "Unnamed_User Unnamed_User";
+        let email: string | null = null;
+        let name = "Unnamed User";
         let avatarUrl: string | null = null;
 
-        if (account.provider === "google") {
-          const googleProfile = profile as GoogleProfile;
-          email = googleProfile.email;
-          name = googleProfile.name || "Unnamed User";
-          avatarUrl = googleProfile.picture || null;
-        } else {
-          const githubProfile = profile as GithubProfile;
-          email = githubProfile.email;
-          name = githubProfile.name || githubProfile.login || "Unnamed User";
-          avatarUrl = githubProfile.avatar_url || null;
+        switch (account.provider) {
+          case "google": {
+            const g = profile as GoogleProfile;
+            email = g.email;
+            name = g.name ?? name;
+            avatarUrl = g.picture ?? null;
+            break;
+          }
+          case "github": {
+            const gh = profile as GithubProfile;
+            email = gh.email;
+            name = gh.name ?? gh.login ?? name;
+            avatarUrl = gh.avatar_url ?? null;
+            break;
+          }
+          case "facebook": {
+            const fb = profile as FacebookProfile;
+            email = fb.email;
+            name = fb.name ?? name;
+            avatarUrl = fb.picture?.data?.url ?? null;
+            break;
+          }
+        }
+
+        if (!email) {
+          console.error("❌ OAuth profile missing email.");
+          return token;
         }
 
         let existingUser = await prisma.user.findUnique({ where: { email } });
 
         if (!existingUser) {
-          const [firstName, lastName] = name.split(" ") || ["User", "Name"];
+          const [firstName = "User", lastName = "User"] = name.split(" ");
           existingUser = await prisma.user.create({
             data: {
               firstName,

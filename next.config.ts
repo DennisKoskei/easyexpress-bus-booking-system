@@ -20,6 +20,11 @@ const NextConfig: NextConfig = {
         hostname: "i.pravatar.cc", // Added pravatar
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "platform-lookaside.fbsbx.com",
+        pathname: "/**",
+      },
     ],
   },
 };
