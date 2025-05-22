@@ -27,6 +27,7 @@ const NextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ["http://192.*.*.*"], // Add any IPs you access from
 };
 
 module.exports = NextConfig;
