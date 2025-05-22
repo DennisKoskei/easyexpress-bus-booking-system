@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { TbAirBalloon } from "react-icons/tb";
+import { CircleUser } from "lucide-react";
 import { navLinks } from "@constants/constants";
 import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
@@ -55,10 +55,16 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-16 sm:h-20">
         {/* LOGO */}
-        <div className="flex w-1/2 items-center">
+        <div className="flex w-1/3 items-center">
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center">
-              <TbAirBalloon className="w-6 h-6 text-white" />
+            <div className="pt-0 md:pt-2 flex w-16 h-16 md:w-20 md:h-20 items-center justify-center">
+              <Image
+                src="/Assets/easyexpress-bus-logo.png"
+                alt="EasyExpress Logo"
+                width={300}
+                height={100}
+                className="h-full w-full max-w-full object-contain"
+              />
             </div>
             <span className="text-white text-xl md:text-2xl font-extrabold italic">
               EasyExpress
@@ -67,7 +73,7 @@ const Header = () => {
         </div>
 
         {/* MOBILE HAMBURGER */}
-        <div className="flex w-1/2 items-center justify-end">
+        <div className="flex w-2/3 items-center justify-end">
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -118,7 +124,7 @@ const Header = () => {
                     alt="User Avatar"
                   />
                 ) : (
-                  <FaUserCircle className="w-10 h-10 text-white" />
+                  <CircleUser className="w-10 h-10 bg-red-400 text-amber-300" />
                 )}
                 <p className="text-sm font-medium">
                   {session.user?.name || "User"}
