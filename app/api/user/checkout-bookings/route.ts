@@ -1,7 +1,9 @@
 // /api/user/checkout-bookings.ts
 
+import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
-import { decodeJwt } from "jose";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@utils/auth";
 
 export async function GET(req: Request) {
   try {
@@ -9,10 +11,6 @@ export async function GET(req: Request) {
     const busId = url.searchParams.get("busId");
     const routeId = url.searchParams.get("routeId");
     const bookingIds = url.searchParams.get("bookingIds");
-
-    console.log("Received busId:", busId);
-    console.log("Received routeId:", routeId);
-    console.log("Received bookingIds:", bookingIds);
 
     if (!busId || !routeId || !bookingIds) {
       return new Response("Missing required parameters", { status: 400 });
@@ -27,20 +25,18 @@ export async function GET(req: Request) {
       return new Response("Failed to parse bookingIds", { status: 400 });
     }
 
-    console.log("Parsed bookingIds array:", bookingIdsArray);
+    const session = await getServerSession(authConfig);
 
-    const authHeader = req.headers.get("Authorization");
-    const token = authHeader?.split(" ")[1];
-
-    let email = "john.doe@example.com";
-    if (token) {
-      const decoded = decodeJwt(token);
-      if (decoded?.email && typeof decoded.email === "string") {
-        email = decoded.email;
-      }
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const sessionEmail = session.user.email;
+
+    const user = await prisma.user.findUnique({
+      where: { email: sessionEmail },
+    });
+
     if (!user) return new Response("User not found", { status: 404 });
 
     // Fetch the bookings with matching IDs for the user
