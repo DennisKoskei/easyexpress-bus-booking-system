@@ -16,9 +16,6 @@ const PaymentPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
-  console.log("Bus ID:", busId);
-  console.log("Route ID:", routeId);
-  console.log("Booking IDs:", bookingIds);
   useEffect(() => {
     if (!busId || !routeId || !bookingIds) {
       console.error("Missing required parameters");
@@ -51,14 +48,43 @@ const PaymentPage: React.FC = () => {
     0,
   );
 
-  const handlePayCard = () => {
-    alert("Proceed to Card Payment Gateway (placeholder)");
-    // Implement real card payment logic later
-  };
+  // const handlePayCard = () => {
+  //   alert("Proceed to Card Payment Gateway (placeholder)");
+  //   // Implement real card payment logic later
+  // };
 
-  const handlePayMpesa = () => {
-    alert("Proceed to Mpesa Payment Gateway (placeholder)");
-    // Implement real Mpesa payment logic later
+  // const handlePayMpesa = () => {
+  //   alert("Proceed to Mpesa Payment Gateway (placeholder)");
+  //   // Implement real Mpesa payment logic later
+  // };
+
+  const handlePayment = async () => {
+    try {
+      // Convert string to array
+      const parsedBookingIds = JSON.parse(bookingIds || "[]");
+
+      const response = await fetch("/api/user/tickets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          busId,
+          routeId,
+          bookingIds: parsedBookingIds,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate tickets");
+      }
+
+      // const data = await response.json();
+      router.push("/profile"); // redirect after success
+    } catch (error) {
+      console.error("Payment failed", error);
+      alert("There was an error creating tickets.");
+    }
   };
 
   return (
@@ -118,7 +144,7 @@ const PaymentPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
-                onClick={handlePayCard}
+                onClick={handlePayment}
                 className="flex items-center justify-center gap-3 bg-green-600 text-white py-3 rounded-lg text-lg hover:bg-green-700"
               >
                 <FaMoneyCheckAlt className="text-2xl" />
@@ -126,7 +152,7 @@ const PaymentPage: React.FC = () => {
               </button>
 
               <button
-                onClick={handlePayMpesa}
+                onClick={handlePayment}
                 className="flex items-center justify-center gap-3 bg-yellow-500 text-white py-3 rounded-lg text-lg hover:bg-yellow-600"
               >
                 <FaMobileAlt className="text-2xl" />

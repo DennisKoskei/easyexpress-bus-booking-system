@@ -10,12 +10,15 @@ export async function GET() {
 
     const session = await getServerSession(authConfig);
 
-    if (!session || !session.user?.id) {
+    if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
-    console.log("User ID from session:", userId);
+    const userId = (
+      await prisma.user.findUnique({
+        where: { email: session.user.email },
+      })
+    )?.id;
 
     const bookings = await prisma.booking.findMany({
       where: { userId },
@@ -56,11 +59,11 @@ export async function GET() {
         createdAt: b.createdAt.toISOString(),
         ticket: ticket
           ? {
-            seatNumber: ticket.seatNumber,
-            busPlate: ticket.busPlate,
-            price: ticket.price,
-            qrCode: ticket.qrCode,
-          }
+              seatNumber: ticket.seatNumber,
+              busPlate: ticket.busPlate,
+              price: ticket.price,
+              qrCode: ticket.qrCode,
+            }
           : null,
       };
     });
