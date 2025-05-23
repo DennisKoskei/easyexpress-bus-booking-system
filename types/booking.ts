@@ -12,6 +12,7 @@ export interface Booking {
   passengerPhone: string;
   passengerGender: Gender;
   status: BookingStatus;
+  paymentId?: string;
   createdAt: string;
 }
 
@@ -34,6 +35,7 @@ export type BookingData = {
   passengerName: string;
   passengerPhone: string;
   passengerGender: string;
+  paymentId?: string;
   createdAt: string;
   ticket?: {
     seatNumber: number;

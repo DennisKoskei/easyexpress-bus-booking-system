@@ -60,9 +60,25 @@ const PaymentPage: React.FC = () => {
 
   const handlePayment = async () => {
     try {
-      // Convert string to array
       const parsedBookingIds = JSON.parse(bookingIds || "[]");
 
+      // STEP 1: Make the payment
+      const paymentResponse = await fetch("/api/user/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bookingIds: parsedBookingIds,
+          paymentMethod: "MPESA", // or "PAYPAL" – set dynamically if needed
+        }),
+      });
+
+      if (!paymentResponse.ok) {
+        throw new Error("Payment creation failed");
+      }
+
+      // STEP 2: Generate tickets after successful payment
       const response = await fetch("/api/user/tickets", {
         method: "POST",
         headers: {
@@ -79,11 +95,10 @@ const PaymentPage: React.FC = () => {
         throw new Error("Failed to generate tickets");
       }
 
-      // const data = await response.json();
-      router.push("/profile"); // redirect after success
+      router.push("/profile"); // Success redirect
     } catch (error) {
-      console.error("Payment failed", error);
-      alert("There was an error creating tickets.");
+      console.error("Payment or ticket generation failed:", error);
+      alert("There was an error processing payment or creating tickets.");
     }
   };
 

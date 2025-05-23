@@ -1,11 +1,13 @@
 // @/types/payment.ts
 
 export type PaymentMethod =
-  | "CREDIT_CARD"
-  | "DEBIT_CARD"
+  | "MPESA"
   | "PAYPAL"
-  | "BANK_TRANSFER"
-  | "CASH"; // You can expand this based on actual methods
+  // | "CREDIT_CARD"
+  // | "DEBIT_CARD"
+  // | "BANK_TRANSFER"
+  // | "CASH"
+  ; // You can expand this based on actual methods
 
 export type PaymentStatus = "PENDING" | "SUCCESSFUL" | "FAILED" | "REFUNDED"; // You can expand this based on actual statuses
 
