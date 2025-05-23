@@ -267,15 +267,24 @@ const TicketPDF = ({
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authConfig);
 
-  if (!session || !session.user?.id) {
+  if (!session || !session.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = session.user.id;
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  const userId = user?.id;
+
   const id = req.nextUrl.searchParams.get("id");
 
   if (!id) {
     return NextResponse.json({ error: "Missing booking ID" }, { status: 400 });
+  }
+
+  if (!userId) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   const booking = await fetchBooking(id, userId);
