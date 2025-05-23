@@ -133,7 +133,8 @@ model Booking {
   user            User          @relation(fields: [userId], references: [id])
   route           Route         @relation(fields: [routeId], references: [id])
   bookingSeats    BookingSeat[]
-  payment         Payment?
+  paymentId       String?       // New foreign key
+  payment         Payment?      @relation(fields: [paymentId], references: [id]) // Optional
 }
 
 model BookingSeat {
@@ -147,13 +148,12 @@ model BookingSeat {
 
 model Payment {
   id            String        @id @default(cuid())
-  bookingId     String        @unique
   amountPaid    Float
   paymentMethod PaymentMethod
   transactionId String        @unique
   status        PaymentStatus @default(SUCCESSFUL)
   paymentDate   DateTime      @default(now())
-  booking       Booking       @relation(fields: [bookingId], references: [id])
+  bookings      Booking[]     // One-to-many relation
 }
 
 model Ticket {
