@@ -32,7 +32,7 @@ const BookingPage: React.FC = () => {
     const fetchBookingDetails = async () => {
       try {
         const response = await fetch(
-          `/api/user/initiate-bookings?busId=${busId}&routeId=${routeId}`,
+          `/api/user/fetch-seat-status?busId=${busId}&routeId=${routeId}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data");

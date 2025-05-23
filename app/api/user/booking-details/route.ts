@@ -1,6 +1,9 @@
 // API: /app/api/user/booking-details/route.ts
 
+import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@utils/auth";
 
 export async function POST(req: Request) {
   try {
@@ -17,12 +20,16 @@ export async function POST(req: Request) {
       }>;
     };
 
-    // Use a hardcoded dummy email since auth is not yet implemented
-    const email = "john.doe@example.com";
+    const session = await getServerSession(authConfig);
 
-    // Get the user by email
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const sessionEmail = session.user.email;
+
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: sessionEmail },
     });
 
     if (!user) {
