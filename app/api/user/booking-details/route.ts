@@ -64,6 +64,11 @@ export async function POST(req: Request) {
         throw new Error(`Seat ${detail.seat} not found for this bus`);
       }
 
+      if (!routeId || !seat?.id) {
+        console.error("Missing routeId or seat.id:", { routeId, seat });
+        continue; // skip this iteration
+      }
+
       // Ensure a routeSeat exists for this route/seat/bus
       await prisma.routeSeat.upsert({
         where: {

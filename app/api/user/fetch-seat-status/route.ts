@@ -66,6 +66,12 @@ export async function GET(req: NextRequest) {
     const routeSeatCreatePromises = [];
     for (const seat of allSeats) {
       if (!existingSeatIds.has(seat.id)) {
+
+        if (!routeId || !seat?.id) {
+          console.error("Missing routeId or seat.id:", { routeId, seat });
+          continue; // skip this iteration
+        }
+
         routeSeatCreatePromises.push(
           prisma.routeSeat.upsert({
             where: {
