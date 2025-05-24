@@ -29,18 +29,51 @@ export async function GET() {
 // 🔵 POST: ADD A NEW DRIVER
 export async function POST(req: Request) {
   try {
-    const { firstName, lastName, phone, licenseNo, experience } =
-      await req.json();
+    const {
+      firstName,
+      lastName,
+      email,
+      passwordHash,
+      gender,
+      age,
+      avatarUrl,
+      phone,
+      licenseNo,
+      experience,
+    } = await req.json();
 
-    if (!firstName || !lastName || !phone || !licenseNo || !experience) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !passwordHash ||
+      !gender ||
+      !age ||
+      !phone ||
+      !licenseNo ||
+      !experience
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
       );
     }
 
+    const finalAvatarUrl = avatarUrl?.trim() === "" ? null : avatarUrl;
+
     const newDriver = await prisma.driver.create({
-      data: { firstName, lastName, phone, licenseNo, experience },
+      data: {
+        firstName,
+        lastName,
+        email,
+        passwordHash,
+        gender,
+        age,
+        avatarUrl: finalAvatarUrl,
+        phone,
+        licenseNo,
+        experience,
+      },
     });
 
     console.log("Driver Created:", newDriver);
@@ -57,8 +90,18 @@ export async function POST(req: Request) {
 // 🟠 PUT: UPDATE A DRIVER BY ID
 export async function PUT(req: Request) {
   try {
-    const { id, firstName, lastName, phone, licenseNo, experience } =
-      await req.json();
+    const {
+      id,
+      firstName,
+      lastName,
+      email,
+      gender,
+      age,
+      avatarUrl,
+      phone,
+      licenseNo,
+      experience,
+    } = await req.json();
 
     if (!id) {
       return NextResponse.json(
@@ -69,7 +112,18 @@ export async function PUT(req: Request) {
 
     const updatedDriver = await prisma.driver.update({
       where: { id },
-      data: { firstName, lastName, phone, licenseNo, experience },
+      data: {
+        id,
+        firstName,
+        lastName,
+        email,
+        gender,
+        age,
+        avatarUrl,
+        phone,
+        licenseNo,
+        experience,
+      },
     });
 
     console.log("Driver Updated:", updatedDriver);
@@ -95,9 +149,21 @@ export async function DELETE(req: Request) {
       );
     }
 
+    const assignedBus = await prisma.bus.findFirst({
+      where: { driverId: id },
+    });
+
+    if (assignedBus) {
+      return NextResponse.json(
+        {
+          error: "Cannot delete driver. They are currently assigned to a bus.",
+        },
+        { status: 400 },
+      );
+    }
+
     await prisma.driver.delete({ where: { id } });
 
-    console.log("Driver Deleted:", id);
     return NextResponse.json(
       { message: "Driver deleted successfully" },
       { status: 200 },

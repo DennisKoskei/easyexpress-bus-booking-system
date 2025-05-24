@@ -69,17 +69,25 @@ export async function POST(req: Request) {
       email,
       phone,
       passwordHash,
+      avatarUrl,
       gender,
       age,
       role,
     } = await req.json();
 
-    if (!email || !role) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !role
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
       );
     }
+
+    const finalAvatarUrl = avatarUrl?.trim() === "" ? null : avatarUrl;
 
     const newUser = await prisma.user.create({
       data: {
@@ -88,6 +96,7 @@ export async function POST(req: Request) {
         email,
         phone,
         passwordHash,
+        avatarUrl: finalAvatarUrl,
         gender,
         age,
         role,

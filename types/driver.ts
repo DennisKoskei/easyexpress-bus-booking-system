@@ -38,7 +38,6 @@ export interface NewDriver {
   gender?: "MALE" | "FEMALE" | "OTHER";
   age?: number;
   experience: number;
-  createdAt: string;
-  // bus?: Bus;
   passwordHash?: string;
+  // bus?: Bus;
 }
