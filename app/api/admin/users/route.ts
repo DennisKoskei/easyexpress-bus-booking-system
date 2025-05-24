@@ -10,12 +10,47 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@utils/prisma";
 
-// 🟢 GET: FETCH ALL USERS
+// 🟢 GET: FETCH ALL USERS WITH BOOKING AND TICKET COUNTS
 export async function GET() {
   try {
-    const users = await prisma.user.findMany();
-    console.log("API Fetch Users --> :", users); // ✅ Console log in API route
-    return NextResponse.json(users);
+    const users = await prisma.user.findMany({
+      include: {
+        bookings: {
+          select: {
+            id: true,
+            bookingSeats: {
+              select: {
+                id: true,
+                ticket: {
+                  select: {
+                    id: true,
+                    passengerId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    console.log("Users found: --> --> ", users);
+
+    const enrichedUsers = users.map((user) => ({
+      ...user,
+      totalBookings: user.bookings.length,
+      totalTickets: user.bookings.reduce((sum, booking) => {
+        const ticketsInBooking = booking.bookingSeats.reduce(
+          (seatSum, seat) => {
+            return seat.ticket ? seatSum + 1 : seatSum;
+          },
+          0,
+        );
+        return sum + ticketsInBooking;
+      }, 0),
+    }));
+    console.log("EnrichedUsers found: --> --> ", enrichedUsers);
+
+    return NextResponse.json(enrichedUsers);
   } catch (error) {
     console.error("API Error fetching users:", error);
     return NextResponse.json(

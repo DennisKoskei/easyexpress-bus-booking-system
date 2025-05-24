@@ -1,9 +1,27 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import NewUserForm from "./NewUserForm";
 import { FaEdit, FaTrash, FaSave, FaPlus, FaSyncAlt } from "react-icons/fa";
-import { User, EditableUserKeys } from "@/types/user";
+import { User } from "@/types/user";
+
+// Generates a pastel color based on input string
+const getColorFromString = (str: string): string => {
+  const colors = [
+    "#F59E0B", // amber-500
+    "#10B981", // emerald-500
+    "#3B82F6", // blue-500
+    "#8B5CF6", // violet-500
+    "#EC4899", // pink-500
+    "#EF4444", // red-500
+    "#14B8A6", // teal-500
+    "#EAB308", // yellow-500
+    "#6366F1", // indigo-500
+  ];
+  const index = str.charCodeAt(0) % colors.length;
+  return colors[index];
+};
 
 const UsersContent: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,9 +35,7 @@ const UsersContent: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch("/api/admin/users");
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
+      if (!response.ok) throw new Error("Failed to fetch users");
       const data: User[] = await response.json();
       setUsers(data);
     } catch (err) {
@@ -39,35 +55,29 @@ const UsersContent: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (editingUserId && editedUser) {
-      try {
-        const response = await fetch("/api/admin/users", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: editingUserId, ...editedUser }),
-        });
+    if (!editingUserId || !editedUser) return;
 
-        if (!response.ok) {
-          throw new Error("Failed to update user");
-        }
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingUserId, ...editedUser }),
+      });
 
-        const updatedUser = await response.json();
+      if (!response.ok) throw new Error("Failed to update user");
 
-        // Update the local users list with the updated user
-        setUsers(
-          users.map((user) =>
-            user.id === editingUserId ? { ...user, ...updatedUser } : user,
-          ),
-        );
+      const updatedUser = await response.json();
 
-        setEditingUserId(null);
-        setEditedUser(null);
-      } catch (error) {
-        console.error("Error updating user:", error);
-        alert("Failed to update user. Please try again.");
-      }
+      setUsers(
+        users.map((user) =>
+          user.id === editingUserId ? { ...user, ...updatedUser } : user,
+        ),
+      );
+      setEditingUserId(null);
+      setEditedUser(null);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Failed to update user. Please try again.");
     }
   };
 
@@ -78,21 +88,22 @@ const UsersContent: React.FC = () => {
     try {
       const response = await fetch("/api/admin/users", {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: id }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
+      if (!response.ok) throw new Error("Failed to delete user");
 
-      // Remove the user from local state after successful deletion
       setUsers(users.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
       alert("Failed to delete user. Please try again.");
+    }
+  };
+
+  const handleFieldChange = (key: keyof User, value: string) => {
+    if (editedUser) {
+      setEditedUser({ ...editedUser, [key]: value });
     }
   };
 
@@ -103,13 +114,10 @@ const UsersContent: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Users</h2>
-
         <div className="flex items-center gap-4">
-          {/* Refresh Button */}
           <button
             onClick={fetchUsers}
             className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-sm rounded-md flex items-center gap-2 disabled:opacity-50"
-            title="Refresh Users"
             disabled={loading}
           >
             <FaSyncAlt
@@ -117,18 +125,11 @@ const UsersContent: React.FC = () => {
             />
             <span>{loading ? "Refreshing..." : "Refresh"}</span>
           </button>
-
-          {/* User Count Display */}
           <span className="text-sm text-gray-600">
             Showing | {users.length} of {users.length}
           </span>
-
-          {/* Toggle Add User Form Button */}
           <button
-            className={`px-3 py-2 flex items-center gap-2 text-sm ${showAddUserForm
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-blue-600 hover:bg-blue-700"
-              } text-white rounded-lg`}
+            className={`px-3 py-2 flex items-center gap-2 text-sm ${showAddUserForm ? "bg-red-500 hover:bg-red-600" : "bg-blue-600 hover:bg-blue-700"} text-white rounded-lg`}
             onClick={() => setShowAddUserForm((prev) => !prev)}
           >
             {showAddUserForm ? (
@@ -153,95 +154,98 @@ const UsersContent: React.FC = () => {
         />
       )}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-white">
         <table className="min-w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
-              <th className="border border-gray-300 px-4 py-2 text-left">#</th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                First Name
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Last Name
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Email
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Phone
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Gender
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Age
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Role
-              </th>
-              <th className="border border-gray-300 px-4 py-2 text-left">
-                Actions
-              </th>
+              <th className="px-4 py-2 border">#</th>
+              <th className="px-4 py-2 border">First Name</th>
+              <th className="px-4 py-2 border">Last Name</th>
+              <th className="px-4 py-2 border">Email</th>
+              <th className="px-4 py-2 border">Phone</th>
+              <th className="px-4 py-2 border">Gender</th>
+              <th className="px-4 py-2 border">Age</th>
+              <th className="px-4 py-2 border">Role</th>
+              <th className="px-4 py-2 border">Avatar</th>
+              <th className="px-4 py-2 border">Bookings</th>
+              <th className="px-4 py-2 border">Tickets</th>
+              <th className="px-4 py-2 border">Created At</th>
+              <th className="px-4 py-2 border">Actions</th>
             </tr>
           </thead>
-
           <tbody>
-            {users.map((user, index) => (
-              <tr key={user.id} className="border-b border-gray-300">
-                <td className="border border-gray-300 px-4 py-2 text-left">
-                  {index + 1}
+            {users.map((user, idx) => (
+              <tr key={user.id}>
+                <td className="px-4 py-2 border">{idx + 1}</td>
+                {[
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "phone",
+                  "gender",
+                  "age",
+                  "role",
+                ].map((key) => (
+                  <td key={key} className="px-4 py-2 border">
+                    {editingUserId === user.id ? (
+                      <input
+                        className="border rounded px-2 py-1 text-sm w-full"
+                        value={editedUser?.[key as keyof User] ?? ""}
+                        onChange={(e) =>
+                          handleFieldChange(key as keyof User, e.target.value)
+                        }
+                      />
+                    ) : (
+                      user[key as keyof User]
+                    )}
+                  </td>
+                ))}
+                <td className="px-4 py-2 border">
+                  {user.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt="Avatar"
+                      width={100}
+                      height={100}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm`}
+                      style={{
+                        backgroundColor: getColorFromString(
+                          user.firstName || "U",
+                        ),
+                      }}
+                    >
+                      {user.firstName?.[0]?.toUpperCase() || "U"}
+                    </div>
+                  )}
                 </td>
-                {Object.keys(user)
-                  .filter(
-                    (key) =>
-                      key !== "id" &&
-                      key !== "passwordHash" &&
-                      key !== "createdAt",
-                  )
-                  .map((key) => {
-                    const typedKey = key as EditableUserKeys;
-                    return (
-                      <td
-                        key={key}
-                        className="border border-gray-300 px-4 py-2 text-left"
-                      >
-                        {editingUserId === user.id ? (
-                          <input
-                            type={typedKey === "age" ? "number" : "text"}
-                            defaultValue={user[typedKey] as string | number}
-                            onChange={(e) =>
-                              setEditedUser({
-                                ...editedUser,
-                                [typedKey]:
-                                  typedKey === "age"
-                                    ? parseInt(e.target.value)
-                                    : e.target.value,
-                              })
-                            }
-                            className="w-full border-red-800 rounded-md bg-white"
-                          />
-                        ) : (
-                          user[typedKey]
-                        )}
-                      </td>
-                    );
-                  })}
-                <td className="border border-gray-300 px-4 py-2 flex justify-center gap-2">
+                <td className="px-4 py-2 border">{user.totalBookings}</td>
+                <td className="px-4 py-2 border">{user.totalTickets}</td>
+                <td className="px-4 py-2 border">
+                  {new Date(user.createdAt).toLocaleString()}
+                </td>
+                <td className="px-4 py-2 border">
                   {editingUserId === user.id ? (
-                    <button className="text-green-500" onClick={handleSave}>
+                    <button
+                      onClick={handleSave}
+                      className="text-green-600 hover:text-green-800 mr-2"
+                    >
                       <FaSave />
                     </button>
                   ) : (
                     <button
-                      className="text-blue-500"
                       onClick={() => handleEdit(user)}
+                      className="text-blue-600 hover:text-blue-800 mr-2"
                     >
                       <FaEdit />
                     </button>
                   )}
                   <button
-                    className="text-red-500"
                     onClick={() => handleDelete(user.id)}
+                    className="text-red-600 hover:text-red-800"
                   >
                     <FaTrash />
                   </button>

@@ -6,12 +6,13 @@ export interface User {
   lastName: string;
   email: string;
   phone?: string;
-  // passwordHash?: string;
-  avatarUrl?: string;
-  gender?: "MALE" | "FEMALE";
+  gender?: string;
   age?: number;
-  role: "PASSENGER" | "ADMIN";
+  role: string;
+  avatarUrl?: string;
   createdAt: string;
+  totalBookings?: number;
+  totalTickets?: number;
 }
 
 export type PublicUser = Pick<
@@ -32,7 +33,7 @@ export interface NewUser {
   phone?: string;
   avatarUrl: string;
   passwordHash?: string;
-  gender?: "MALE" | "FEMALE";
+  gender?: "MALE" | "FEMALE" | "OTHER";
   age?: number;
   role?: "ADMIN" | "PASSENGER";
 }
