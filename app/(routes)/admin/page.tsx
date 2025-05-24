@@ -9,6 +9,7 @@ import BusesContent from "./(components)/BusesContent";
 import UsersContent from "./(components)/UsersContent";
 import DriversContent from "./(components)/DriversContent";
 import RevenueContent from "./(components)/RevenueContent";
+import TicketsContent from "./(components)/TicketsContent";
 import SettingsContent from "./(components)/SettingsContent";
 import Sidebar from "./(components)/Sidebar";
 
@@ -37,10 +38,11 @@ const AdminPage = () => {
         <section className="mt-6">
           {activeTab === "dashboard" && <Dashboard />}
           {activeTab === "routes" && <RoutesContent />}
-          {activeTab === "bookings" && <BookingsContent />}
           {activeTab === "buses" && <BusesContent />}
           {activeTab === "users" && <UsersContent />}
           {activeTab === "drivers" && <DriversContent />}
+          {activeTab === "bookings" && <BookingsContent />}
+          {activeTab === "tickets" && <TicketsContent />}
           {activeTab === "revenue" && <RevenueContent />}
           {activeTab === "settings" && <SettingsContent />}
         </section>

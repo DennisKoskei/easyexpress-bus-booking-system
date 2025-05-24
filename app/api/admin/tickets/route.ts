@@ -13,14 +13,7 @@ import { prisma } from "@utils/prisma";
 // 🟢 GET: FETCH ALL TICKETS
 export async function GET() {
   try {
-    const tickets = await prisma.ticket.findMany({
-      include: {
-        passenger: true,
-        booking: true,
-        route: true,
-        seat: true,
-      },
-    });
+    const tickets = await prisma.ticket.findMany({});
     console.log("API Fetch Tickets:", tickets);
     return NextResponse.json(tickets);
   } catch (error) {
@@ -35,14 +28,21 @@ export async function GET() {
 // 🔵 POST: ADD A NEW TICKET
 export async function POST(req: Request) {
   try {
-    const { passengerId, bookingId, routeId, seatId, busPlate, price, qrCode } =
-      await req.json();
+    const {
+      passengerId,
+      bookingSeatId,
+      routeId,
+      seatNumber,
+      busPlate,
+      price,
+      qrCode,
+    } = await req.json();
 
     if (
       !passengerId ||
-      !bookingId ||
+      !bookingSeatId ||
       !routeId ||
-      !seatId ||
+      !seatNumber ||
       !busPlate ||
       !price ||
       !qrCode
@@ -56,9 +56,9 @@ export async function POST(req: Request) {
     const newTicket = await prisma.ticket.create({
       data: {
         passengerId,
-        bookingId,
+        bookingSeatId,
         routeId,
-        seatId,
+        seatNumber,
         busPlate,
         price,
         qrCode,
@@ -82,9 +82,9 @@ export async function PUT(req: Request) {
     const {
       id,
       passengerId,
-      bookingId,
+      bookingSeatId,
       routeId,
-      seatId,
+      seatNumber,
       busPlate,
       price,
       qrCode,
@@ -101,9 +101,9 @@ export async function PUT(req: Request) {
       where: { id },
       data: {
         passengerId,
-        bookingId,
+        bookingSeatId,
         routeId,
-        seatId,
+        seatNumber,
         busPlate,
         price,
         qrCode,

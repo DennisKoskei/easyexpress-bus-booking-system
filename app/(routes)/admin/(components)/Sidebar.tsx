@@ -47,12 +47,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
             <FaChartBar /> Routes
           </li>
           <li
-            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "bookings" ? "bg-blue-800" : "hover:bg-blue-800"}`}
-            onClick={() => setActiveTab("bookings")}
-          >
-            <FaTicketAlt /> Bookings
-          </li>
-          <li
             className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "buses" ? "bg-blue-800" : "hover:bg-blue-800"}`}
             onClick={() => setActiveTab("buses")}
           >
@@ -69,6 +63,18 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
             onClick={() => setActiveTab("drivers")}
           >
             <FaUsers /> Drivers
+          </li>
+          <li
+            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "bookings" ? "bg-blue-800" : "hover:bg-blue-800"}`}
+            onClick={() => setActiveTab("bookings")}
+          >
+            <FaTicketAlt /> Bookings
+          </li>
+          <li
+            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "tickets" ? "bg-blue-800" : "hover:bg-blue-800"}`}
+            onClick={() => setActiveTab("tickets")}
+          >
+            <FaTicketAlt /> Tickets
           </li>
           <li
             className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer ${activeTab === "revenue" ? "bg-blue-800" : "hover:bg-blue-800"}`}
