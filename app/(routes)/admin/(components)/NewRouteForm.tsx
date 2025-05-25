@@ -1,14 +1,21 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { EditableRouteKeys, NewRouteFormProps } from "@/types/route";
+import { Route } from "@/types/route";
 import { Bus } from "@/types/bus";
+
+interface NewRouteFormProps {
+  setRoutes: React.Dispatch<React.SetStateAction<Route[]>>;
+  setShowAddRouteForm: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+type NewRoute = Omit<Route, "id">;
 
 const NewRouteForm: React.FC<NewRouteFormProps> = ({
   setRoutes,
   setShowAddRouteForm,
 }) => {
-  const [newRoutes, setNewRoutes] = useState<EditableRouteKeys[]>([
+  const [newRoutes, setNewRoutes] = useState<NewRoute[]>([
     {
       departure: "",
       destination: "",
@@ -20,7 +27,7 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({
   ]);
 
   const [errors, setErrors] = useState<
-    Record<number, Partial<Record<keyof EditableRouteKeys, boolean>>>
+    Record<number, Partial<Record<keyof NewRoute, boolean>>>
   >({});
   const [buses, setBuses] = useState<Bus[]>([]);
   const [showToast, setShowToast] = useState(false);
@@ -41,9 +48,9 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({
   }, []);
 
   const validateRoute = (
-    route: EditableRouteKeys,
-  ): Partial<Record<keyof EditableRouteKeys, boolean>> => {
-    const routeErrors: Partial<Record<keyof EditableRouteKeys, boolean>> = {};
+    route: NewRoute,
+  ): Partial<Record<keyof NewRoute, boolean>> => {
+    const routeErrors: Partial<Record<keyof NewRoute, boolean>> = {};
     if (!route.departure.trim()) routeErrors.departure = true;
     if (!route.destination.trim()) routeErrors.destination = true;
     if (!route.date) routeErrors.date = true;
@@ -53,25 +60,21 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({
     return routeErrors;
   };
 
-  const handleRouteInputChange = (
+  const handleRouteInputChange = <K extends keyof NewRoute>(
     index: number,
-    key: keyof EditableRouteKeys,
-    value: string | number,
+    key: K,
+    value: NewRoute[K],
   ) => {
     const updatedRoutes = [...newRoutes];
-
-    const updatedValue =
-      key === "amount"
-        ? Number(value)
-        : key === "date"
-          ? new Date(value as string)
-          : value;
-
     updatedRoutes[index] = {
       ...updatedRoutes[index],
-      [key]: updatedValue as never, // bypass TS strict typing
+      [key]:
+        key === "amount"
+          ? Number(value)
+          : key === "date"
+            ? new Date(value as string)
+            : value,
     };
-
     setNewRoutes(updatedRoutes);
   };
 

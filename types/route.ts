@@ -20,9 +20,4 @@ export interface SearchData {
 }
 
 // EditableRouteKeys type to define which keys are editable
-export type EditableRouteKeys = Omit<Route, "id">;
-
-export interface NewRouteFormProps {
-  setRoutes: React.Dispatch<React.SetStateAction<Route[]>>;
-  setShowAddRouteForm: React.Dispatch<React.SetStateAction<boolean>>;
-}
+export type EditableRouteKeys = keyof Omit<Route, "id">;
