@@ -17,9 +17,7 @@ const RoutesContent: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch("/api/admin/routes");
-      if (!response.ok) {
-        throw new Error("Failed to fetch routes");
-      }
+      if (!response.ok) throw new Error("Failed to fetch routes");
       const data: Route[] = await response.json();
       setRoutes(data);
     } catch (err) {
@@ -39,35 +37,37 @@ const RoutesContent: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (editingRouteId && editedRoute) {
-      try {
-        const response = await fetch("/api/admin/routes", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: editingRouteId, ...editedRoute }),
-        });
+    if (!editingRouteId || !editedRoute) return;
 
-        if (!response.ok) throw new Error("Failed to update route");
+    try {
+      const response = await fetch("/api/admin/routes", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingRouteId, ...editedRoute }),
+      });
 
-        const updatedRoute = await response.json();
+      if (!response.ok) throw new Error("Failed to update routes");
 
-        setRoutes(
-          routes.map((route) =>
-            route.id === editingRouteId ? { ...route, ...updatedRoute } : route,
-          ),
-        );
+      const updatedRoute = await response.json();
 
-        setEditingRouteId(null);
-        setEditedRoute(null);
-      } catch (error) {
-        console.error("Error updating route:", error);
-        alert("Failed to update route. Please try again.");
-      }
+      setRoutes(
+        routes.map((route) =>
+          route.id === editingRouteId ? { ...route, ...updatedRoute } : route,
+        ),
+      );
+      setEditingRouteId(null);
+      setEditedRoute(null);
+    } catch (error) {
+      console.error("Error updating route:", error);
+      alert("Failed to update route. Please try again.");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this route?")) return;
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this route?",
+    );
+    if (!confirmDelete) return;
 
     try {
       const response = await fetch("/api/admin/routes", {
@@ -92,12 +92,10 @@ const RoutesContent: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Routes</h2>
-
         <div className="flex items-center gap-4">
           <button
             onClick={fetchRoutes}
             className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-sm rounded-md flex items-center gap-2 disabled:opacity-50"
-            title="Refresh Routes"
             disabled={loading}
           >
             <FaSyncAlt
@@ -105,16 +103,11 @@ const RoutesContent: React.FC = () => {
             />
             <span>{loading ? "Refreshing..." : "Refresh"}</span>
           </button>
-
           <span className="text-sm text-gray-600">
             Showing | {routes.length} of {routes.length}
           </span>
-
           <button
-            className={`px-3 py-2 flex items-center gap-2 text-sm ${showAddRouteForm
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-blue-600 hover:bg-blue-700"
-              } text-white rounded-lg`}
+            className={`px-3 py-2 flex items-center gap-2 text-sm ${showAddRouteForm ? "bg-red-500 hover:bg-red-600" : "bg-blue-600 hover:bg-blue-700"} text-white rounded-lg`}
             onClick={() => setShowAddRouteForm((prev) => !prev)}
           >
             {showAddRouteForm ? (
@@ -139,7 +132,7 @@ const RoutesContent: React.FC = () => {
         />
       )}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-white">
         <table className="min-w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
@@ -167,21 +160,20 @@ const RoutesContent: React.FC = () => {
               </th>
             </tr>
           </thead>
-
           <tbody>
             {routes.map((route, index) => (
-              <tr key={route.id} className="border-b border-gray-300">
-                <td className="border border-gray-300 px-4 py-2 text-left">
-                  {index + 1}
-                </td>
-                {[
-                  "departure",
-                  "destination",
-                  "date",
-                  "time",
-                  "amount",
-                  "busId",
-                ].map((key) => (
+              <tr key={route.id}>
+                <td className="px-4 py-2 border">{index + 1}</td>
+                {(
+                  [
+                    "departure",
+                    "destination",
+                    "date",
+                    "time",
+                    "amount",
+                    "busId",
+                  ] as const
+                ).map((key: keyof Route) => (
                   <td
                     key={key}
                     className="border border-gray-300 px-4 py-2 text-left"
@@ -198,7 +190,7 @@ const RoutesContent: React.FC = () => {
                         defaultValue={
                           key === "date"
                             ? new Date(route.date).toISOString().split("T")[0]
-                            : (route as any)[key]
+                            : String(route[key] ?? "")
                         }
                         onChange={(e) =>
                           setEditedRoute({
@@ -216,26 +208,30 @@ const RoutesContent: React.FC = () => {
                     ) : key === "date" ? (
                       new Date(route.date).toLocaleDateString()
                     ) : (
-                      (route as any)[key]
+                      String(route[key] ?? "")
                     )}
                   </td>
                 ))}
-                <td className="border border-gray-300 px-4 py-2 flex justify-center gap-2">
+
+                <td className="px-4 py-2 border">
                   {editingRouteId === route.id ? (
-                    <button className="text-green-500" onClick={handleSave}>
+                    <button
+                      onClick={handleSave}
+                      className="text-green-600 hover:text-green-800 mr-2"
+                    >
                       <FaSave />
                     </button>
                   ) : (
                     <button
-                      className="text-blue-500"
                       onClick={() => handleEdit(route)}
+                      className="text-blue-600 hover:text-blue-800 mr-2"
                     >
                       <FaEdit />
                     </button>
                   )}
                   <button
-                    className="text-red-500"
                     onClick={() => handleDelete(route.id)}
+                    className="text-red-600 hover:text-red-800"
                   >
                     <FaTrash />
                   </button>
